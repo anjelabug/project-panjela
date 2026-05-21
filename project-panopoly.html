@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Panopoly · Round 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ── MONOPOLY COLOR PALETTE ─────────────────────────────── */
+:root {
+  --brown:      #6B2D8B;
+  --cyan:       #AAE0FA;
+  --magenta:    #D93A96;
+  --orange:     #F7941D;
+  --yellow:     #F9E84C;
+  --darkblue:   #1B3A8C;
+
+  --card-bg:    #F5F0E8;
+  --card-body:  #FDFAF5;
+  --ink:        #1A1614;
+  --ink-mid:    #3D3530;
+  --ink-light:  #6A5E58;
+  --rule:       #C8BFB0;
+
+  /* Monopoly board mint green */
+  --page-bg:    #BFDBAE;
+  --page-mid:   #A8C896;
+
+  --house-green: #2D7A3A;
+  --hotel-red:   #C8102E;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--page-bg);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px);
+  min-height: 100vh;
+  padding: 1.5rem 1rem 5rem;
+  color: var(--ink);
+}
+
+/* ── NAV LINKS ── */
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.nav-link {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: rgba(255,255,255,0.5);
+  border: 1.5px solid rgba(0,0,0,0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.nav-link:active { background: rgba(255,255,255,0.8); }
+
+/* ── PAGE HEADER ── */
+.page-header { text-align: center; margin-bottom: 2rem; }
+
+.page-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 2.2rem;
+  color: #1A1614;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.3);
+  line-height: 1.1;
+}
+
+.page-title span { font-style: italic; color: #2C5C1A; }
+
+.page-sub {
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(26,22,20,0.55);
+  margin-top: 0.4rem;
+}
+
+.round-badge {
+  display: inline-block;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FDFAF5;
+  background: #2C5C1A;
+  padding: 0.25rem 0.9rem;
+  margin-top: 0.8rem;
+  border-radius: 2px;
+}
+
+/* ── PROPERTY CARD ── */
+.property-card {
+  background: var(--card-body);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  margin-bottom: 1.2rem;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 6px 20px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.property-card.complete {
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 0 0 3px #F9E84C, 0 6px 24px rgba(249,232,76,0.25);
+}
+
+/* ── COLOR BAR ── */
+.deed-color-bar {
+  padding: 0.55rem 0.9rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.deed-color-bar .group-label {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.deed-color-bar .property-name {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0.1rem;
+}
+
+.deed-color-bar .chevron {
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.property-card.open .deed-color-bar .chevron { transform: rotate(180deg); }
+
+.bar-brown    { background: var(--brown);    color: #fff; }
+.bar-cyan     { background: var(--cyan);     color: var(--ink); }
+.bar-magenta  { background: var(--magenta);  color: #fff; }
+.bar-orange   { background: var(--orange);   color: var(--ink); }
+.bar-yellow   { background: var(--yellow);   color: var(--ink); }
+.bar-darkblue { background: var(--darkblue); color: #fff; }
+
+/* ── DEED HEADER ── */
+.deed-header { border-bottom: 2px solid var(--ink); padding: 0.65rem 0.9rem 0.6rem; }
+
+.deed-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.deed-subtitle {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.6rem;
+  font-style: italic;
+  color: var(--ink-mid);
+  text-align: center;
+  margin-top: 0.15rem;
+}
+
+.deed-progress-wrap { margin-top: 0.55rem; display: flex; align-items: center; gap: 0.5rem; }
+.deed-progress-track { flex: 1; height: 5px; background: #D8D0C4; border: 1px solid #B8B0A4; overflow: hidden; }
+.deed-progress-fill { height: 100%; transition: width 0.4s ease; }
+.deed-progress-count { font-size: 0.55rem; color: var(--ink-light); white-space: nowrap; letter-spacing: 0.04em; }
+.deed-buildings { margin-top: 0.4rem; font-size: 0.75rem; letter-spacing: 0.05em; min-height: 1.2rem; }
+
+/* ── DEED BODY ── */
+.deed-body { display: none; border-top: 1px solid var(--rule); }
+.property-card.open .deed-body { display: block; }
+
+.deed-section { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--rule); }
+.deed-section:last-child { border-bottom: none; }
+
+.deed-section-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.25rem;
+}
+
+.deed-description { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; font-style: italic; color: var(--ink-mid); line-height: 1.5; }
+
+.deed-detail {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink-light);
+  line-height: 1.5;
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: #EDE8E0;
+  border-left: 2px solid var(--rule);
+}
+
+.deed-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; }
+.deed-grid-label { font-size: 0.58rem; color: var(--ink-light); letter-spacing: 0.04em; white-space: nowrap; }
+.deed-grid-value { font-family: 'Libre Baskerville', serif; font-size: 0.78rem; color: var(--ink); }
+
+.deed-counter-wrap { display: flex; align-items: center; gap: 0.8rem; }
+.deed-btn {
+  width: 34px; height: 34px;
+  border: 2px solid var(--ink);
+  background: var(--card-bg);
+  font-size: 1.2rem;
+  font-family: 'Libre Baskerville', serif;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.deed-btn:active { background: #DDD8CE; }
+
+.deed-counter-display { flex: 1; text-align: center; }
+.deed-counter-number { font-family: 'IM Fell English', serif; font-size: 2.2rem; color: var(--ink); line-height: 1; }
+.deed-counter-target { font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.08em; margin-top: 0.1rem; }
+.deed-last-used { font-size: 0.58rem; color: var(--ink-light); text-align: center; margin-top: 0.4rem; font-style: italic; }
+
+.deed-full-progress { margin-top: 0.5rem; }
+.deed-full-track { height: 8px; background: #D8D0C4; border: 1px solid var(--ink); }
+.deed-full-fill { height: 100%; transition: width 0.4s ease; }
+.deed-full-labels { display: flex; justify-content: space-between; font-size: 0.52rem; color: var(--ink-light); margin-top: 0.2rem; }
+
+.deed-notes-log { max-height: 180px; overflow-y: auto; margin-bottom: 0.6rem; }
+.deed-note-entry { padding: 0.4rem 0; border-bottom: 1px solid var(--rule); display: flex; gap: 0.6rem; align-items: flex-start; }
+.deed-note-entry:last-child { border-bottom: none; }
+.deed-note-ts { font-size: 0.5rem; color: var(--ink-light); white-space: nowrap; margin-top: 2px; flex-shrink: 0; }
+.deed-note-text { font-family: 'Libre Baskerville', serif; font-size: 0.78rem; color: var(--ink); line-height: 1.4; }
+.deed-note-empty { font-size: 0.6rem; color: var(--ink-light); font-style: italic; text-align: center; padding: 0.4rem 0; }
+
+.deed-note-row { display: flex; gap: 0.4rem; align-items: flex-end; }
+.deed-note-input {
+  flex: 1;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.8rem;
+  color: var(--ink);
+  background: #EDE8E0;
+  border: 1px solid var(--rule);
+  padding: 0.4rem 0.6rem;
+  resize: none;
+  min-height: 48px;
+  line-height: 1.4;
+}
+.deed-note-input:focus { outline: none; border-color: var(--ink); }
+.deed-note-input::placeholder { color: var(--ink-light); font-style: italic; }
+.deed-note-submit {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--card-bg);
+  background: var(--ink);
+  border: none;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.deed-note-submit:active { background: var(--ink-mid); }
+
+.deed-complete {
+  display: none;
+  background: linear-gradient(135deg, rgba(249,232,76,0.12), rgba(249,232,76,0.04));
+  border-top: 2px solid var(--ink);
+  padding: 0.7rem 0.9rem;
+  text-align: center;
+}
+.property-card.complete .deed-complete { display: block; }
+.deed-complete-msg { font-family: 'IM Fell English', serif; font-size: 0.95rem; color: var(--ink); letter-spacing: 0.04em; }
+.deed-complete-sub { font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+
+/* ── COLOR GROUP HEADER ── */
+.color-group-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; margin-top: 1.5rem; }
+.color-group-swatch { width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2); flex-shrink: 0; }
+.color-group-name { font-family: 'Libre Baskerville', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,22,20,0.6); }
+.color-group-status { font-size: 0.52rem; color: rgba(26,22,20,0.45); letter-spacing: 0.08em; margin-left: auto; }
+
+/* ── ROUND SUMMARY ── */
+.round-summary {
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(0,0,0,0.15);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.round-summary-label { font-size: 0.52rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,22,20,0.5); white-space: nowrap; }
+.round-summary-bar-wrap { flex: 1; height: 3px; background: rgba(0,0,0,0.15); overflow: hidden; }
+.round-summary-bar { height: 100%; background: linear-gradient(90deg, #2C5C1A, #4A8C2A); transition: width 0.4s ease; }
+.round-summary-pct { font-family: 'IM Fell English', serif; font-size: 0.9rem; color: #2C5C1A; white-space: nowrap; }
+
+/* ── COLLECTED SECTION ── */
+.collected-section { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.12); }
+.collected-caption {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(26,22,20,0.5);
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+.collected-table { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+
+.collected-card {
+  width: 96px;
+  background: var(--card-body);
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.collected-card:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 3px 5px 0 rgba(0,0,0,0.35), 0 8px 20px rgba(0,0,0,0.25); }
+.cc-color-bar { height: 18px; flex-shrink: 0; }
+.cc-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.5rem 0.3rem; }
+.cc-challenge { font-family: 'Libre Baskerville', serif; font-size: 0.42rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; color: var(--ink); line-height: 1.3; }
+.cc-product { font-family: 'Libre Baskerville', serif; font-size: 0.38rem; font-style: italic; color: var(--ink-mid); text-align: center; line-height: 1.3; margin-top: 0.15rem; padding: 0 0.1rem; }
+.cc-street { font-family: 'DM Mono', monospace; font-size: 0.34rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); text-align: center; margin-top: 0.2rem; }
+.cc-stamp { font-family: 'IM Fell English', serif; font-size: 0.6rem; color: var(--ink-light); margin-top: 0.25rem; }
+
+/* Collected modal */
+.cc-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+.cc-modal-backdrop.open { display: flex; }
+.cc-modal {
+  background: var(--card-body);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.4), 0 12px 40px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.cc-modal-bar { height: 24px; width: 100%; }
+.cc-modal-inner { padding: 1.1rem 1.2rem 1rem; }
+.cc-modal-close { position: absolute; top: 0.4rem; right: 0.6rem; font-size: 1rem; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; line-height: 1; z-index: 10; }
+.cc-modal-street { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); }
+.cc-modal-title { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink); margin: 0.15rem 0 0.05rem; }
+.cc-modal-product { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; font-style: italic; color: var(--ink-mid); margin-bottom: 0.7rem; }
+.cc-modal-divider { border: none; border-top: 1px solid var(--rule); margin: 0.7rem 0; }
+.cc-modal-detail-label { font-size: 0.48rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.15rem; }
+.cc-modal-detail-value { font-family: 'Libre Baskerville', serif; font-size: 0.82rem; color: var(--ink); margin-bottom: 0.5rem; }
+.cc-modal-badge { display: inline-block; font-family: 'IM Fell English', serif; font-size: 0.7rem; color: var(--ink); border: 1.5px solid var(--ink); padding: 0.15rem 0.5rem; margin-top: 0.3rem; letter-spacing: 0.04em; }
+
+/* ── CONFETTI ── */
+.confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
+.confetti-piece { position: absolute; top: -10px; animation: confettiFall linear forwards; }
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+}
+
+footer { text-align: center; margin-top: 3rem; font-size: 0.5rem; letter-spacing: 0.12em; color: rgba(26,22,20,0.4); text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- MODAL -->
+<div class="cc-modal-backdrop" id="ccModalBackdrop" onclick="closeModal(event)">
+  <div class="cc-modal">
+    <div class="cc-modal-bar" id="ccModalBar"></div>
+    <button class="cc-modal-close" onclick="closeModalBtn()">✕</button>
+    <div class="cc-modal-inner">
+      <div id="ccModalStreet" class="cc-modal-street"></div>
+      <div id="ccModalTitle" class="cc-modal-title"></div>
+      <div id="ccModalProduct" class="cc-modal-product"></div>
+      <hr class="cc-modal-divider">
+      <div class="cc-modal-detail-label">Notes</div>
+      <div id="ccModalChallenge" class="cc-modal-detail-value"></div>
+      <div class="cc-modal-detail-label">Completed</div>
+      <div id="ccModalDate" class="cc-modal-detail-value"></div>
+      <div><span class="cc-modal-badge">✦ Challenge Complete ✦</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV LINKS -->
+<div class="nav-links">
+  <a class="nav-link" href="https://anjelabug.github.io/project-panjela/">← Project Panjela</a>
+  <a class="nav-link" href="https://sites.google.com/view/projectpanopoly" target="_blank">Panopoly Rules ↗</a>
+</div>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <div class="page-title">Project <span>Panopoly</span></div>
+  <div class="page-sub">A Panning Challenge · Created by Jami · <a href="https://www.youtube.com/@theimpulsivepanner" style="color:rgba(26,22,20,0.5); text-decoration:none;">@theimpulsivepanner</a> on YouTube</div>
+  <div class="round-badge" id="roundBadge">Round 1</div>
+</header>
+
+<!-- OVERALL PROGRESS -->
+<div class="round-summary">
+  <div class="round-summary-label">Round Progress</div>
+  <div class="round-summary-bar-wrap"><div class="round-summary-bar" id="overallBar"></div></div>
+  <div class="round-summary-pct" id="overallPct">—</div>
+</div>
+
+<!-- ══ BROWN · Wheel 1 · Haircare ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--brown)"></div>
+  <div class="color-group-name">Brown/Purple · Wheel 1 · Mediterranean Ave. / Baltic Ave.</div>
+  <div class="color-group-status">1 collected when complete</div>
+</div>
+
+<div class="property-card" id="card-hair">
+  <div class="deed-color-bar bar-brown" onclick="toggleCard('hair')">
+    <div><div class="group-label">Wheel 1 · Skincare / Body / Hair</div><div class="property-name">Mediterranean Avenue</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Haircare</div>
+    <div class="deed-subtitle">Batiste · Dry Powder Shampoo · Dark</div>
+    <div class="deed-buildings" id="buildings-hair"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-hair" style="background:var(--brown);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-hair">0 / 5</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Haircare — use and evaluate a haircare product across 5 applications.</div>
+      <div class="deed-detail">Wheel 1 · 5 uses · Log it consciously for once!</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Batiste</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Dry Powder Shampoo</div>
+        <div class="deed-grid-label">Shade/Scent</div><div class="deed-grid-value">Dark</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/19/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 5</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('hair',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-hair">0</div><div class="deed-counter-target">of 5 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('hair',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-hair"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-hair" style="background:var(--brown);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-hair">0%</span><span>5 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-hair"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-hair" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('hair')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of Batiste Dark from the Haircare collection! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAGENTA · Wheel 4 · Blush + Cream Product ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--magenta)"></div>
+  <div class="color-group-name">Pink · Wheel 4 · St. Charles Place / States Ave. / Tennessee Ave.</div>
+  <div class="color-group-status">2 collected when complete</div>
+</div>
+
+<div class="property-card" id="card-blush">
+  <div class="deed-color-bar bar-magenta" onclick="toggleCard('blush')">
+    <div><div class="group-label">Wheel 4 · Face Color Products</div><div class="property-name">St. Charles Place</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Blush</div>
+    <div class="deed-subtitle">Rare Beauty · Soft Pinch Liquid Blush · Spirited</div>
+    <div class="deed-buildings" id="buildings-blush"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-blush" style="background:var(--magenta);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-blush">0 / 20</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Blush — use and evaluate a blush product across 20 wears.</div>
+      <div class="deed-detail">Wheel 4 · 20 uses · Mid-tone violet liquid blush. Cool-toned soft goth anchor.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Rare Beauty</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Soft Pinch Liquid Blush</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Spirited (mid-tone violet)</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">—</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 20</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('blush',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-blush">0</div><div class="deed-counter-target">of 20 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('blush',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-blush"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-blush" style="background:var(--magenta);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-blush">0%</span><span>20 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-blush"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-blush" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('blush')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of Spirited from the Blush collection! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<div class="property-card" id="card-cream">
+  <div class="deed-color-bar bar-magenta" onclick="toggleCard('cream')">
+    <div><div class="group-label">Wheel 4 · Face Color Products</div><div class="property-name">States Avenue</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Cream Product</div>
+    <div class="deed-subtitle">Makeup by Mario · SoftSculpt Cream Contour & Bronzer · Fair</div>
+    <div class="deed-buildings" id="buildings-cream"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-cream" style="background:var(--magenta);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-cream">0 / 10</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Cream Product — use and evaluate a cream face product across 10 wears.</div>
+      <div class="deed-detail">Wheel 4 · 10 uses · Comfort zone stretch — first dedicated bronzer/contour challenge. Can be used as either bronzer or contour.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Makeup by Mario</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">SoftSculpt Cream Contour & Bronzer</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Fair</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/18/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 10</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('cream',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-cream">0</div><div class="deed-counter-target">of 10 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('cream',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-cream"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-cream" style="background:var(--magenta);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-cream">0%</span><span>10 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-cream"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-cream" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('cream')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of SoftSculpt from the Cream Product collection on States Avenue! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ YELLOW · Wheel 3 · Least Used + Most Used ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--yellow);border-color:rgba(0,0,0,0.2)"></div>
+  <div class="color-group-name">Yellow · Wheel 3 · Marvin Gardens / Ventnor Ave. / Atlantic Ave.</div>
+  <div class="color-group-status">Full set when all collected! 🏠</div>
+</div>
+
+<div class="property-card" id="card-newest">
+  <div class="deed-color-bar bar-yellow" onclick="toggleCard('newest')">
+    <div><div class="group-label">Wheel 3 · Usage Qualifier</div><div class="property-name">Atlantic Avenue</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Newest</div>
+    <div class="deed-subtitle">Prequel Skin · AM/PM Modern Moisturizer</div>
+    <div class="deed-buildings" id="buildings-newest"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-newest" style="background:var(--yellow);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-newest">0 / 10</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Newest — your most recently acquired product. Give it a proper test run.</div>
+      <div class="deed-detail">Wheel 3 · 10 uses · Arrived 5/21/2026 alongside Gleanser + SA and Lip Visor. Will this earn a permanent spot in your routine?</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Prequel Skin</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">AM/PM Modern Moisturizer</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/21/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 10</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('newest',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-newest">0</div><div class="deed-counter-target">of 10 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('newest',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-newest"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-newest" style="background:var(--yellow);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-newest">0%</span><span>10 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-newest"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-newest" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('newest')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of AM/PM Moisturizer from the Newest collection! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<div class="property-card" id="card-mostused">
+  <div class="deed-color-bar bar-yellow" onclick="toggleCard('mostused')">
+    <div><div class="group-label">Wheel 3 · Usage Qualifier</div><div class="property-name">Ventnor Avenue</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Most Used</div>
+    <div class="deed-subtitle">Benefit · 24-Hour Brow Setter</div>
+    <div class="deed-buildings" id="buildings-mostused"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-mostused" style="background:var(--yellow);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-mostused">0 / 10</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Most Used — the product you reach for every single day. Track it consciously.</div>
+      <div class="deed-detail">Wheel 3 · 10 uses · Your daily automatic reach. Log it intentionally for once!</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Benefit</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">24-Hour Brow Setter</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/18/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 10</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('mostused',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-mostused">0</div><div class="deed-counter-target">of 10 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('mostused',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-mostused"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-mostused" style="background:var(--yellow);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-mostused">0%</span><span>10 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-mostused"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-mostused" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('mostused')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of 24-Hour Brow Setter from the Most Used collection! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COLLECTED CARDS ══ -->
+<div class="collected-section">
+  <div class="collected-caption">Properties Acquired · Challenges Completed</div>
+  <div class="collected-table">
+
+    <div class="collected-card" onclick="openModal({bar:'var(--orange)',street:'New York Avenue · Orange',title:'Bold Look · 10 uses',product:'e.l.f. Sheer Slick Lipstick · Black Cherry',challenge:'Very pink sheer product, no fragrance.',completed:'5/19/2026'})">
+      <div class="cc-color-bar" style="background:var(--orange)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Bold Look · 10</div>
+        <div class="cc-product">e.l.f. Black Cherry</div>
+        <div class="cc-street">New York Ave.</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--cyan)',street:'Connecticut Avenue · Light Blue',title:'Setting Spray · 10 uses',product:'One/Size Powder Melt Glass Setting Spray',challenge:'Best use is to set base products mid-routine.',completed:'5/18/2026'})">
+      <div class="cc-color-bar" style="background:var(--cyan)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Setting Spray · 10</div>
+        <div class="cc-product">One/Size Powder Melt</div>
+        <div class="cc-street">Connecticut Ave.</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--darkblue)',street:'Boardwalk · Dark Blue',title:'Eye Product · 7 uses',product:'about-face Shadow Fix Eye Primer',challenge:'Affordable, reliable option; WRP.',completed:'5/18/2026'})">
+      <div class="cc-color-bar" style="background:var(--darkblue)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Eye Product · 7</div>
+        <div class="cc-product">about-face Shadow Fix</div>
+        <div class="cc-street">Boardwalk</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--yellow)',street:'Marvin Gardens · Yellow',title:'Least Used · 5 uses',product:'Holika Holika Classic Pottery Palette',challenge:'A beautifully wearable everyday palette. Confirmed keeper.',completed:'5/21/2026'})">
+      <div class="cc-color-bar" style="background:var(--yellow)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Least Used · 5</div>
+        <div class="cc-product">HH Classic Pottery</div>
+        <div class="cc-street">Marvin Gardens</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>Project Panopoly · Round 1 · anjelabug.github.io/project-panjela</footer>
+
+<script>
+const TARGETS = { hair:5, blush:20, newest:10, mostused:10, cream:10 };
+const KEY = 'project-panopoly-r1';
+
+function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} }
+
+function seedHistoricalData() {
+  const d = load();
+  if (Object.keys(d).length === 0) {
+    save({
+      hair:     { count: 2, lastUsed: '5/21/2026', notes: [] },
+      blush:    { count: 5, lastUsed: '5/21/2026', notes: [] },
+      newest:   { count: 0, lastUsed: null,         notes: [] },
+      mostused: { count: 3, lastUsed: '5/21/2026',  notes: [] },
+      cream:    { count: 3, lastUsed: '5/21/2026',  notes: [] },
+    });
+  }
+}
+
+function toggleCard(id) { document.getElementById('card-'+id).classList.toggle('open'); }
+
+function adjustCount(id, delta) {
+  const d = load();
+  if (!d[id]) d[id] = { count:0, notes:[], lastUsed:null };
+  d[id].count = Math.max(0, (d[id].count||0) + delta);
+  if (delta > 0) { const n=new Date(); d[id].lastUsed=(n.getMonth()+1)+'/'+n.getDate()+'/'+n.getFullYear(); }
+  save(d); renderCard(id, d[id]); updateOverall();
+  if (delta > 0 && d[id].count >= TARGETS[id]) celebrate(id);
+}
+
+function addNote(id) {
+  const inp = document.getElementById('input-'+id);
+  const text = inp.value.trim(); if (!text) return;
+  const d = load();
+  if (!d[id]) d[id] = { count:0, notes:[], lastUsed:null };
+  if (!d[id].notes) d[id].notes = [];
+  const n=new Date();
+  const ts=(n.getMonth()+1)+'/'+n.getDate()+'/'+n.getFullYear()+' '+n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  d[id].notes.push({ts,text}); save(d); inp.value=''; renderNotes(id, d[id].notes);
+}
+
+function renderCard(id, data) {
+  const count = data.count||0;
+  const target = TARGETS[id];
+  const pct = Math.min(100, Math.round(count/target*100));
+  document.getElementById('num-'+id).textContent = count;
+  document.getElementById('count-'+id).textContent = count+' / '+target;
+  document.getElementById('bar-'+id).style.width = pct+'%';
+  document.getElementById('fill-'+id).style.width = pct+'%';
+  document.getElementById('pct-'+id).textContent = pct+'%';
+  const le = document.getElementById('last-'+id);
+  if (le) le.textContent = data.lastUsed ? 'Last used '+data.lastUsed : '';
+  document.getElementById('card-'+id).classList.toggle('complete', count >= target);
+  renderNotes(id, data.notes||[]);
+}
+
+function renderNotes(id, notes) {
+  const log = document.getElementById('log-'+id); if (!log) return;
+  if (!notes||!notes.length) { log.innerHTML='<div class="deed-note-empty">No notes yet.</div>'; return; }
+  log.innerHTML = notes.map(n=>`<div class="deed-note-entry"><div class="deed-note-ts">${n.ts}</div><div class="deed-note-text">${esc(n.text)}</div></div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateOverall() {
+  const d = load();
+  let total=0, current=0;
+  Object.keys(TARGETS).forEach(id => {
+    total += TARGETS[id];
+    current += Math.min((d[id]&&d[id].count)||0, TARGETS[id]);
+  });
+  const pct = total>0 ? Math.round(current/total*100) : 0;
+  document.getElementById('overallBar').style.width = pct+'%';
+  document.getElementById('overallPct').textContent = pct+'%';
+}
+
+function openModal(info) {
+  document.getElementById('ccModalBar').style.background = info.bar;
+  document.getElementById('ccModalStreet').textContent = info.street;
+  document.getElementById('ccModalTitle').textContent = info.title;
+  document.getElementById('ccModalProduct').textContent = info.product;
+  document.getElementById('ccModalChallenge').textContent = info.challenge;
+  document.getElementById('ccModalDate').textContent = info.completed;
+  document.getElementById('ccModalBackdrop').classList.add('open');
+}
+function closeModal(e) { if (e.target===document.getElementById('ccModalBackdrop')) closeModalBtn(); }
+function closeModalBtn() { document.getElementById('ccModalBackdrop').classList.remove('open'); }
+
+function celebrate(id) {
+  const colors=['#6B2D8B','#AAE0FA','#D93A96','#F7941D','#F9E84C','#1B3A8C','#F5F0E8'];
+  const container = document.getElementById('confettiContainer');
+  for(let i=0;i<50;i++) setTimeout(()=>{
+    const p=document.createElement('div'); p.classList.add('confetti-piece');
+    p.style.cssText=`left:${Math.random()*100}vw;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'1px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.4}s;`;
+    container.appendChild(p); setTimeout(()=>p.remove(),4000);
+  },i*35);
+}
+
+// INIT
+seedHistoricalData();
+const d = load();
+Object.keys(TARGETS).forEach(id => renderCard(id, d[id]||{count:0,notes:[],lastUsed:null}));
+updateOverall();
+</script>
+</body>
+</html>
