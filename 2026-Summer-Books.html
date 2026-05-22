@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Summer Book Bingo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0ede6;
+    --surface: #faf8f4;
+    --card-bg: #ffffff;
+    --border: #d4cfc4;
+    --text-dark: #2c2a24;
+    --text-mid: #5a5548;
+    --text-light: #8a8278;
+    --empty: #e8e4da;
+    --empty-border: #c8c3b6;
+    --inprogress: #a8c5a0;
+    --inprogress-border: #7aaa70;
+    --inprogress-text: #2a4a26;
+    --complete: #5a8a52;
+    --complete-border: #3d6636;
+    --complete-text: #ffffff;
+    --free: #d4a853;
+    --free-border: #b8893a;
+    --free-text: #3a2a0a;
+    --accent: #6b9e63;
+    --accent-dark: #4a7a42;
+    --modal-overlay: rgba(44, 42, 36, 0.55);
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(44,42,36,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* subtle texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 18px 28px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--empty);
+    border: 1.5px solid var(--empty-border);
+    color: var(--text-mid);
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    cursor: pointer;
+  }
+  .back-pill:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent-dark);
+  }
+
+  .header-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .header-subtitle {
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+  }
+
+  .header-emojis {
+    font-size: 20px;
+    letter-spacing: 3px;
+    margin-left: auto;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    max-width: 820px;
+    margin: 32px auto 0;
+    padding: 0 18px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .stat-pill span.num {
+    color: var(--accent-dark);
+    font-size: 16px;
+  }
+
+  /* ── BINGO CARD ── */
+  .bingo-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+
+  .square {
+    border-radius: var(--radius);
+    border: 2px solid var(--empty-border);
+    background: var(--empty);
+    min-height: 108px;
+    padding: 10px 8px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    gap: 4px;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .square:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(44,42,36,0.13);
+  }
+
+  .square.inprogress {
+    background: var(--inprogress);
+    border-color: var(--inprogress-border);
+  }
+  .square.inprogress .sq-category { color: var(--inprogress-text); }
+  .square.inprogress .sq-title { color: var(--inprogress-text); opacity: 0.85; }
+  .square.inprogress .sq-pct { color: var(--inprogress-text); }
+
+  .square.complete {
+    background: var(--complete);
+    border-color: var(--complete-border);
+  }
+  .square.complete .sq-category { color: var(--complete-text); }
+  .square.complete .sq-title { color: var(--complete-text); opacity: 0.9; }
+  .square.complete .sq-check { display: flex; }
+
+  .square.free-square {
+    background: var(--free);
+    border-color: var(--free-border);
+    cursor: default;
+  }
+  .square.free-square:hover { transform: none; box-shadow: none; }
+  .square.free-square .sq-category { color: var(--free-text); font-size: 22px; }
+
+  .sq-category {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--text-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1.25;
+  }
+
+  .sq-title {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+    line-height: 1.3;
+    margin-top: 2px;
+    word-break: break-word;
+    opacity: 0.8;
+  }
+
+  .sq-pct {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-mid);
+    margin-top: auto;
+  }
+
+  .sq-check {
+    display: none;
+    font-size: 16px;
+    margin-top: auto;
+  }
+
+  /* ── COMPLETED BOOKS LIST ── */
+  .completed-section {
+    margin-top: 32px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+  }
+
+  .completed-section h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .completed-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .completed-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+  }
+
+  .completed-list li .c-num {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--complete);
+    min-width: 20px;
+  }
+
+  .completed-list li .c-title {
+    font-weight: 700;
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+    color: var(--text-dark);
+  }
+
+  .completed-list li .c-author {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  .completed-list li .c-square {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--complete);
+    background: #e8f4e6;
+    border: 1px solid #b8d8b4;
+    border-radius: 999px;
+    padding: 2px 10px;
+    white-space: nowrap;
+  }
+
+  .empty-state {
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+    padding: 6px 0;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--modal-overlay);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 16px 48px rgba(44,42,36,0.22);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-header {
+    padding: 20px 22px 16px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .modal-category-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .modal-header h2 {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.2;
+    flex: 1;
+  }
+
+  .modal-close {
+    background: var(--empty);
+    border: 1.5px solid var(--border);
+    color: var(--text-mid);
+    font-size: 18px;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .modal-close:hover { background: #ddd; }
+
+  .modal-body {
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .form-section-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .form-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-mid);
+  }
+
+  .form-field input, .form-field textarea {
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    padding: 8px 11px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-dark);
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .form-field input:focus, .form-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .form-field textarea {
+    resize: vertical;
+    min-height: 70px;
+  }
+
+  .pct-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pct-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+    padding: 0;
+    border: none;
+    background: none;
+  }
+
+  .pct-display {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-dark);
+    min-width: 38px;
+    text-align: right;
+  }
+
+  .complete-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--empty);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .complete-toggle:hover { background: #e0ddd5; }
+  .complete-toggle input[type="checkbox"] {
+    accent-color: var(--complete);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+  .complete-toggle label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-dark);
+    cursor: pointer;
+  }
+
+  /* NOTES */
+  .notes-section {
+    border-top: 1.5px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .notes-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .notes-input-row .form-field {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .btn-add-note {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+    height: fit-content;
+    align-self: flex-end;
+    margin-bottom: 0;
+  }
+  .btn-add-note:hover { background: var(--accent-dark); }
+
+  .notes-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .note-item {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 13px;
+  }
+
+  .note-timestamp {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+
+  .note-text {
+    font-size: 13px;
+    color: var(--text-dark);
+    line-height: 1.5;
+  }
+
+  /* MODAL FOOTER */
+  .modal-footer {
+    padding: 14px 22px 20px;
+    border-top: 1.5px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel {
+    background: var(--empty);
+    color: var(--text-mid);
+    border: 1.5px solid var(--border);
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-cancel:hover { background: #ddd; }
+
+  .btn-save {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-save:hover { background: var(--accent-dark); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--text-light);
+    font-style: italic;
+    font-family: 'Libre Baskerville', serif;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 600px) {
+    .bingo-grid { gap: 5px; }
+    .square { min-height: 82px; padding: 7px 5px 6px; }
+    .sq-category { font-size: 10px; }
+    .header-emojis { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-row">
+    <a href="index.html" class="back-pill">← Back to Index</a>
+    <div>
+      <div class="header-title">2026 Summer Book Bingo 🌲</div>
+      <div class="header-subtitle">May 22 – September 8, 2026 · King County Library System &amp; Seattle Arts &amp; Lectures</div>
+    </div>
+    <div class="header-emojis">🌿 🦅 🏔️ ☁️ 🍄</div>
+  </div>
+</header>
+
+<main>
+  <div class="stats-bar">
+    <div class="stat-pill">📚 In Progress: <span class="num" id="stat-inprogress">0</span></div>
+    <div class="stat-pill">✅ Complete: <span class="num" id="stat-complete">0</span></div>
+    <div class="stat-pill">🎯 Bingo Lines: <span class="num" id="stat-bingo">0</span></div>
+  </div>
+
+  <div class="bingo-card">
+    <div class="bingo-grid" id="bingo-grid"></div>
+  </div>
+
+  <div class="completed-section">
+    <h2>🌲 Books Completed</h2>
+    <ul class="completed-list" id="completed-list">
+      <li class="empty-state">No books completed yet — happy reading!</li>
+    </ul>
+  </div>
+</main>
+
+<footer>
+  🌧️ Reading through the PNW summer, one square at a time 🌧️
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <div>
+        <div class="modal-category-badge" id="modal-badge"></div>
+        <h2 id="modal-title"></h2>
+      </div>
+      <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Book Info -->
+      <div>
+        <div class="form-section-label">📖 Book Details</div>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="input-title">Title</label>
+            <input type="text" id="input-title" placeholder="Book title…">
+          </div>
+          <div class="form-field">
+            <label for="input-author">Author</label>
+            <input type="text" id="input-author" placeholder="Author name…">
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:10px;">
+          <div class="form-field">
+            <label for="input-start">Started</label>
+            <input type="date" id="input-start">
+          </div>
+          <div class="form-field">
+            <label for="input-finish">Finished</label>
+            <input type="date" id="input-finish">
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div>
+        <div class="form-section-label">📊 Reading Progress</div>
+        <div class="pct-row">
+          <input type="range" id="input-pct" min="0" max="100" value="0" step="1">
+          <div class="pct-display" id="pct-display">0%</div>
+        </div>
+        <div class="complete-toggle" style="margin-top:10px;">
+          <input type="checkbox" id="input-complete">
+          <label for="input-complete">Mark as complete (100%)</label>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="notes-section">
+        <div class="form-section-label">🍃 Notes</div>
+        <div class="notes-input-row">
+          <div class="form-field">
+            <label for="input-note">Add a note</label>
+            <textarea id="input-note" placeholder="Jot something down…"></textarea>
+          </div>
+        </div>
+        <button class="btn-add-note" id="btn-add-note">Add Note</button>
+        <div class="notes-list" id="notes-list"></div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" id="btn-cancel">Cancel</button>
+      <button class="btn-save" id="btn-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── SQUARE DEFINITIONS ──
+  const SQUARES = [
+    { id: 'water',       label: 'Water' },
+    { id: 'time-travel', label: 'Time Travel' },
+    { id: 'lib-worker',  label: 'Suggested by a Library Worker' },
+    { id: 'soothing',    label: 'Soothing' },
+    { id: 'hard-love',   label: 'Hard-to-Love Protagonist' },
+    { id: 'sal-speaker', label: 'SAL Speaker' },
+    { id: 'diaspora',    label: 'Diaspora' },
+    { id: 'fifa',        label: 'FIFA World Cup Country' },
+    { id: 'eye-opening', label: 'Eye-opening' },
+    { id: 'pnw-bipoc',   label: 'PNW Black, Indigenous, or POC Author' },
+    { id: 'myth',        label: 'Myth & Legend' },
+    { id: 'unplug',      label: 'Unplug' },
+    { id: 'FREE',        label: 'FREE', free: true },
+    { id: 'outer-space', label: 'Outer Space' },
+    { id: 'under150',    label: 'Under 150 Pages' },
+    { id: 'hea-hfn',     label: 'HEA / HFN' },
+    { id: 'queer-trans', label: 'Queer/Trans Voices' },
+    { id: 'indie-book',  label: 'Suggested by an Independent Bookseller' },
+    { id: 'historical',  label: 'Historical' },
+    { id: 'buddy-read',  label: 'Buddy Read' },
+    { id: 'honorable',   label: 'Honorable Mention' },
+    { id: 'horror',      label: 'Horror' },
+    { id: 'womens-sport',label: "Women's Sports" },
+    { id: 'own-choice',  label: 'Own Choice' },
+    { id: 'animal',      label: 'Animal' },
+  ];
+
+  // ── BINGO LINES (indices) ──
+  const BINGO_LINES = [
+    [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24], // rows
+    [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24], // cols
+    [0,6,12,18,24],[4,8,12,16,20] // diagonals
+  ];
+
+  // ── STORAGE ──
+  const STORAGE_KEY = 'bookbingo2026';
+
+  function loadData() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
+  }
+
+  function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // ── STATE ──
+  let data = loadData();
+  let currentSquareId = null;
+
+  // ── RENDER GRID ──
+  function renderGrid() {
+    const grid = document.getElementById('bingo-grid');
+    grid.innerHTML = '';
+    SQUARES.forEach(sq => {
+      const entry = data[sq.id] || {};
+      const el = document.createElement('div');
+      el.className = 'square';
+      el.dataset.id = sq.id;
+
+      if (sq.free) {
+        el.classList.add('free-square');
+        el.innerHTML = `<div class="sq-category">🐝</div><div class="sq-category">FREE</div>`;
+      } else {
+        const hasBook = !!entry.title;
+        const isComplete = entry.complete;
+        const pct = entry.pct || 0;
+
+        if (isComplete) el.classList.add('complete');
+        else if (hasBook) el.classList.add('inprogress');
+
+        el.innerHTML = `
+          <div class="sq-category">${sq.label}</div>
+          ${hasBook ? `<div class="sq-title">${escHtml(entry.title)}</div>` : ''}
+          ${hasBook && !isComplete ? `<div class="sq-pct">${pct}%</div>` : ''}
+          ${isComplete ? `<div class="sq-check">✅</div>` : ''}
+        `;
+        el.addEventListener('click', () => openModal(sq.id));
+      }
+
+      grid.appendChild(el);
+    });
+    renderStats();
+    renderCompleted();
+  }
+
+  // ── STATS ──
+  function renderStats() {
+    let inprog = 0, complete = 0;
+    SQUARES.forEach(sq => {
+      if (sq.free) return;
+      const e = data[sq.id] || {};
+      if (e.complete) complete++;
+      else if (e.title) inprog++;
+    });
+    document.getElementById('stat-inprogress').textContent = inprog;
+    document.getElementById('stat-complete').textContent = complete;
+
+    // count bingo lines
+    let bingo = 0;
+    BINGO_LINES.forEach(line => {
+      if (line.every(i => {
+        const sq = SQUARES[i];
+        if (sq.free) return true;
+        return (data[sq.id] || {}).complete;
+      })) bingo++;
+    });
+    document.getElementById('stat-bingo').textContent = bingo;
+  }
+
+  // ── COMPLETED LIST ──
+  function renderCompleted() {
+    const list = document.getElementById('completed-list');
+    const completed = SQUARES.filter(sq => !sq.free && (data[sq.id] || {}).complete);
+    if (!completed.length) {
+      list.innerHTML = '<li class="empty-state">No books completed yet — happy reading!</li>';
+      return;
+    }
+    list.innerHTML = completed.map((sq, i) => {
+      const e = data[sq.id];
+      return `<li>
+        <span class="c-num">${i + 1}.</span>
+        <span class="c-title">${escHtml(e.title)}</span>
+        <span class="c-author">by ${escHtml(e.author || 'Unknown')}</span>
+        <span class="c-square">${sq.label}</span>
+      </li>`;
+    }).join('');
+  }
+
+  // ── MODAL ──
+  function openModal(id) {
+    currentSquareId = id;
+    const sq = SQUARES.find(s => s.id === id);
+    const entry = data[id] || {};
+
+    document.getElementById('modal-badge').textContent = 'Square';
+    document.getElementById('modal-title').textContent = sq.label;
+    document.getElementById('input-title').value = entry.title || '';
+    document.getElementById('input-author').value = entry.author || '';
+    document.getElementById('input-start').value = entry.startDate || '';
+    document.getElementById('input-finish').value = entry.finishDate || '';
+    document.getElementById('input-pct').value = entry.pct || 0;
+    document.getElementById('pct-display').textContent = (entry.pct || 0) + '%';
+    document.getElementById('input-complete').checked = !!entry.complete;
+    document.getElementById('input-note').value = '';
+    renderNotes(entry.notes || []);
+
+    document.getElementById('modal-overlay').classList.add('open');
+    document.getElementById('input-title').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    currentSquareId = null;
+  }
+
+  function renderNotes(notes) {
+    const list = document.getElementById('notes-list');
+    if (!notes.length) { list.innerHTML = ''; return; }
+    list.innerHTML = notes.map(n => `
+      <div class="note-item">
+        <div class="note-timestamp">${n.ts}</div>
+        <div class="note-text">${escHtml(n.text)}</div>
+      </div>
+    `).join('');
+  }
+
+  // ── EVENTS ──
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('btn-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+
+  document.getElementById('input-pct').addEventListener('input', function() {
+    document.getElementById('pct-display').textContent = this.value + '%';
+    if (parseInt(this.value) === 100) {
+      document.getElementById('input-complete').checked = true;
+    }
+  });
+
+  document.getElementById('input-complete').addEventListener('change', function() {
+    if (this.checked) {
+      document.getElementById('input-pct').value = 100;
+      document.getElementById('pct-display').textContent = '100%';
+      if (!document.getElementById('input-finish').value) {
+        document.getElementById('input-finish').value = today();
+      }
+    }
+  });
+
+  document.getElementById('btn-add-note').addEventListener('click', () => {
+    const text = document.getElementById('input-note').value.trim();
+    if (!text || !currentSquareId) return;
+    if (!data[currentSquareId]) data[currentSquareId] = {};
+    if (!data[currentSquareId].notes) data[currentSquareId].notes = [];
+    data[currentSquareId].notes.push({ ts: nowStamp(), text });
+    saveData(data);
+    renderNotes(data[currentSquareId].notes);
+    document.getElementById('input-note').value = '';
+  });
+
+  document.getElementById('btn-save').addEventListener('click', () => {
+    if (!currentSquareId) return;
+    const title = document.getElementById('input-title').value.trim();
+    const author = document.getElementById('input-author').value.trim();
+    const startDate = document.getElementById('input-start').value;
+    const finishDate = document.getElementById('input-finish').value;
+    const pct = parseInt(document.getElementById('input-pct').value);
+    const complete = document.getElementById('input-complete').checked;
+
+    const existing = data[currentSquareId] || {};
+    data[currentSquareId] = {
+      ...existing,
+      title, author, startDate, finishDate, pct, complete
+    };
+    saveData(data);
+    closeModal();
+    renderGrid();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ── UTILS ──
+  function escHtml(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function today() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function nowStamp() {
+    const d = new Date();
+    const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    return `${date} at ${time}`;
+  }
+
+  // ── INIT ──
+  renderGrid();
+</script>
+</body>
+</html>
