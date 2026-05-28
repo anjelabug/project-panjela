@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Panopoly · Round 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple:    #6B2D8B;  /* 🪻 Dark Purple · Drugstore */
+  --magenta:   #D93A96;  /* 🌸 Magenta · Masstige */
+  --yellow:    #F9E84C;  /* 🌟 Yellow · Mid-range */
+  --green:     #00A950;  /* 🌿 Green · High-end */
+  --red:       #ED1B24;  /* 🍷 Red · Prestige */
+  --darkblue:  #1B3A8C;  /* 🦋 Dark Blue · Luxury */
+
+  --card-bg:   #F5F0E8;
+  --card-body: #FDFAF5;
+  --ink:       #1A1614;
+  --ink-mid:   #3D3530;
+  --ink-light: #7A6E68;
+  --rule:      #C8BFB0;
+  --page-bg:   #BFDBAE;
+  --gold:      #B8962A;
+  --gold-light:#E8C84A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--page-bg);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,0.04) 39px, rgba(0,0,0,0.04) 40px);
+  min-height: 100vh;
+  padding: 1.5rem 1rem 5rem;
+  color: var(--ink);
+}
+
+/* ── NAV ── */
+.nav-links { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.nav-link { font-family: 'Libre Baskerville', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: rgba(255,255,255,0.5); border: 1.5px solid rgba(0,0,0,0.2); padding: 0.3rem 0.8rem; border-radius: 2px; text-decoration: none; transition: background 0.15s; }
+.nav-link:hover { background: rgba(255,255,255,0.8); }
+
+/* ── HEADER ── */
+.page-header { text-align: center; margin-bottom: 2rem; }
+.page-title { font-family: 'IM Fell English', serif; font-size: 2.2rem; color: #1A1614; letter-spacing: 0.04em; text-shadow: 0 1px 4px rgba(255,255,255,0.3); line-height: 1.1; }
+.page-title span { font-style: italic; color: #2C5C1A; }
+.page-sub { font-size: 0.55rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(26,22,20,0.55); margin-top: 0.4rem; }
+.page-sub a { color: rgba(26,22,20,0.5); text-decoration: none; }
+.round-badge { display: inline-block; font-family: 'Libre Baskerville', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #FDFAF5; background: #2C5C1A; padding: 0.25rem 0.9rem; margin-top: 0.8rem; border-radius: 2px; }
+
+/* ── ROUND SUMMARY ── */
+.round-summary { background: rgba(255,255,255,0.35); border: 1px solid rgba(0,0,0,0.15); padding: 0.9rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+.round-summary-label { font-size: 0.52rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,22,20,0.5); white-space: nowrap; }
+.round-summary-bar-wrap { flex: 1; height: 3px; background: rgba(0,0,0,0.15); overflow: hidden; }
+.round-summary-bar { height: 100%; background: linear-gradient(90deg, #2C5C1A, #4A8C2A); transition: width 0.4s ease; }
+.round-summary-pct { font-family: 'IM Fell English', serif; font-size: 0.9rem; color: #2C5C1A; white-space: nowrap; }
+
+/* ── COLOR GROUP HEADER ── */
+.color-group-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; margin-top: 1.5rem; }
+.color-group-swatch { width: 18px; height: 18px; border: 2px solid rgba(0,0,0,0.2); flex-shrink: 0; }
+.color-group-name { font-family: 'Libre Baskerville', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26,22,20,0.6); }
+.color-group-status { font-size: 0.52rem; color: rgba(26,22,20,0.45); letter-spacing: 0.08em; margin-left: auto; }
+
+/* ── PROPERTY CARD ── */
+.property-card { background: var(--card-body); border: 2px solid var(--ink); border-radius: 4px; margin-bottom: 1.2rem; box-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 6px 20px rgba(0,0,0,0.2); overflow: hidden; }
+.property-card.complete { box-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 0 0 3px var(--gold-light), 0 6px 24px rgba(184,150,42,0.2); }
+
+.deed-color-bar { padding: 0.55rem 0.9rem 0.5rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.deed-color-bar .group-label { font-family: 'Libre Baskerville', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1.2; }
+.deed-color-bar .property-name { font-family: 'Libre Baskerville', serif; font-size: 0.88rem; font-weight: 700; line-height: 1.2; margin-top: 0.1rem; }
+.deed-color-bar .chevron { font-size: 0.8rem; transition: transform 0.2s; flex-shrink: 0; margin-left: 0.5rem; }
+.property-card.open .deed-color-bar .chevron { transform: rotate(180deg); }
+
+.bar-purple   { background: var(--purple);   color: #fff; }
+.bar-magenta  { background: var(--magenta);  color: #fff; }
+.bar-yellow   { background: var(--yellow);   color: var(--ink); }
+.bar-green    { background: var(--green);    color: #fff; }
+.bar-red      { background: var(--red);      color: #fff; }
+.bar-darkblue { background: var(--darkblue); color: #fff; }
+
+.deed-header { border-bottom: 2px solid var(--ink); padding: 0.65rem 0.9rem 0.6rem; }
+.deed-title { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; font-weight: 700; color: var(--ink); line-height: 1.2; text-align: center; text-transform: uppercase; letter-spacing: 0.04em; }
+.deed-subtitle { font-family: 'Libre Baskerville', serif; font-size: 0.6rem; font-style: italic; color: var(--ink-mid); text-align: center; margin-top: 0.15rem; }
+.deed-progress-wrap { margin-top: 0.55rem; display: flex; align-items: center; gap: 0.5rem; }
+.deed-progress-track { flex: 1; height: 5px; background: #D8D0C4; border: 1px solid #B8B0A4; overflow: hidden; }
+.deed-progress-fill { height: 100%; transition: width 0.4s ease; }
+.deed-progress-count { font-size: 0.55rem; color: var(--ink-light); white-space: nowrap; letter-spacing: 0.04em; }
+.deed-buildings { margin-top: 0.4rem; font-size: 0.75rem; letter-spacing: 0.05em; min-height: 1.2rem; }
+
+.deed-body { display: none; border-top: 1px solid var(--rule); }
+.property-card.open .deed-body { display: block; }
+.deed-section { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--rule); }
+.deed-section:last-child { border-bottom: none; }
+.deed-section-label { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.45rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.25rem; }
+.deed-description { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; font-style: italic; color: var(--ink-mid); line-height: 1.5; }
+.deed-detail { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--ink-light); line-height: 1.5; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: #EDE8E0; border-left: 2px solid var(--rule); }
+.deed-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; }
+.deed-grid-label { font-size: 0.58rem; color: var(--ink-light); letter-spacing: 0.04em; white-space: nowrap; }
+.deed-grid-value { font-family: 'Libre Baskerville', serif; font-size: 0.78rem; color: var(--ink); }
+
+.deed-counter-wrap { display: flex; align-items: center; gap: 0.8rem; }
+.deed-btn { width: 34px; height: 34px; border: 2px solid var(--ink); background: var(--card-bg); font-size: 1.2rem; font-family: 'Libre Baskerville', serif; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink); transition: background 0.1s; -webkit-tap-highlight-color: transparent; }
+.deed-btn:active { background: #DDD8CE; }
+.deed-counter-display { flex: 1; text-align: center; }
+.deed-counter-number { font-family: 'IM Fell English', serif; font-size: 2.2rem; color: var(--ink); line-height: 1; }
+.deed-counter-target { font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.08em; margin-top: 0.1rem; }
+.deed-last-used { font-size: 0.58rem; color: var(--ink-light); text-align: center; margin-top: 0.4rem; font-style: italic; }
+.deed-full-progress { margin-top: 0.5rem; }
+.deed-full-track { height: 8px; background: #D8D0C4; border: 1px solid var(--ink); }
+.deed-full-fill { height: 100%; transition: width 0.4s ease; }
+.deed-full-labels { display: flex; justify-content: space-between; font-size: 0.52rem; color: var(--ink-light); margin-top: 0.2rem; }
+
+.deed-notes-log { max-height: 180px; overflow-y: auto; margin-bottom: 0.6rem; }
+.deed-note-entry { padding: 0.4rem 0; border-bottom: 1px solid var(--rule); display: flex; gap: 0.6rem; align-items: flex-start; }
+.deed-note-entry:last-child { border-bottom: none; }
+.deed-note-ts { font-size: 0.5rem; color: var(--ink-light); white-space: nowrap; margin-top: 2px; flex-shrink: 0; }
+.deed-note-text { font-family: 'Libre Baskerville', serif; font-size: 0.78rem; color: var(--ink); line-height: 1.4; }
+.deed-note-empty { font-size: 0.6rem; color: var(--ink-light); font-style: italic; text-align: center; padding: 0.4rem 0; }
+.deed-note-row { display: flex; gap: 0.4rem; align-items: flex-end; }
+.deed-note-input { flex: 1; font-family: 'Libre Baskerville', serif; font-size: 0.8rem; color: var(--ink); background: #EDE8E0; border: 1px solid var(--rule); padding: 0.4rem 0.6rem; resize: none; min-height: 48px; line-height: 1.4; }
+.deed-note-input:focus { outline: none; border-color: var(--ink); }
+.deed-note-input::placeholder { color: var(--ink-light); font-style: italic; }
+.deed-note-submit { font-family: 'Libre Baskerville', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--card-bg); background: var(--ink); border: none; padding: 0.5rem 0.7rem; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.deed-note-submit:active { background: var(--ink-mid); }
+
+.deed-complete { display: none; background: linear-gradient(135deg, rgba(184,150,42,0.12), rgba(184,150,42,0.04)); border-top: 2px solid var(--ink); padding: 0.7rem 0.9rem; text-align: center; }
+.property-card.complete .deed-complete { display: block; }
+.deed-complete-msg { font-family: 'IM Fell English', serif; font-size: 0.95rem; color: var(--ink); letter-spacing: 0.04em; }
+.deed-complete-sub { font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+
+/* ── COLLECTED SECTION ── */
+.collected-section { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.12); }
+.collected-caption { font-family: 'Libre Baskerville', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(26,22,20,0.5); text-align: center; margin-bottom: 1.2rem; }
+.collected-table { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+
+.collected-card { width: 96px; background: var(--card-body); border: 2px solid var(--ink); border-radius: 3px; box-shadow: 2px 3px 0 rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.18s, box-shadow 0.18s; display: flex; flex-direction: column; align-items: stretch; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+.collected-card:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 3px 5px 0 rgba(0,0,0,0.35), 0 8px 20px rgba(0,0,0,0.2); }
+.cc-color-bar { height: 18px; flex-shrink: 0; }
+.cc-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.5rem 0.3rem; }
+.cc-challenge { font-family: 'Libre Baskerville', serif; font-size: 0.42rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; color: var(--ink); line-height: 1.3; }
+.cc-product { font-family: 'Libre Baskerville', serif; font-size: 0.38rem; font-style: italic; color: var(--ink-mid); text-align: center; line-height: 1.3; margin-top: 0.15rem; padding: 0 0.1rem; }
+.cc-brand { font-family: 'DM Mono', monospace; font-size: 0.34rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-light); text-align: center; margin-top: 0.2rem; }
+.cc-stamp { font-family: 'IM Fell English', serif; font-size: 0.6rem; color: var(--ink-light); margin-top: 0.25rem; }
+
+/* Modal */
+.cc-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+.cc-modal-backdrop.open { display: flex; }
+.cc-modal { background: var(--card-body); border: 2px solid var(--ink); border-radius: 4px; max-width: 320px; width: 100%; box-shadow: 4px 4px 0 rgba(0,0,0,0.4), 0 12px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
+.cc-modal-bar { height: 24px; width: 100%; }
+.cc-modal-inner { padding: 1.1rem 1.2rem 1rem; }
+.cc-modal-close { position: absolute; top: 0.4rem; right: 0.6rem; font-size: 1rem; color: rgba(255,255,255,0.7); cursor: pointer; background: none; border: none; line-height: 1; z-index: 10; }
+.cc-modal-brand { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); }
+.cc-modal-title { font-family: 'Libre Baskerville', serif; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink); margin: 0.15rem 0 0.05rem; }
+.cc-modal-product { font-family: 'Libre Baskerville', serif; font-size: 0.8rem; font-style: italic; color: var(--ink-mid); margin-bottom: 0.7rem; }
+.cc-modal-divider { border: none; border-top: 1px solid var(--rule); margin: 0.7rem 0; }
+.cc-modal-detail-label { font-size: 0.48rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 0.15rem; }
+.cc-modal-detail-value { font-family: 'Libre Baskerville', serif; font-size: 0.82rem; color: var(--ink); margin-bottom: 0.5rem; }
+.cc-modal-badge { display: inline-block; font-family: 'IM Fell English', serif; font-size: 0.7rem; color: var(--ink); border: 1.5px solid var(--ink); padding: 0.15rem 0.5rem; margin-top: 0.3rem; letter-spacing: 0.04em; }
+
+/* ── CONFETTI ── */
+.confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
+.confetti-piece { position: absolute; top: -10px; animation: confettiFall linear forwards; }
+@keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(110vh) rotate(540deg); opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- MODAL -->
+<div class="cc-modal-backdrop" id="ccModalBackdrop" onclick="closeModal(event)">
+  <div class="cc-modal">
+    <div class="cc-modal-bar" id="ccModalBar"></div>
+    <button class="cc-modal-close" onclick="closeModalBtn()">✕</button>
+    <div class="cc-modal-inner">
+      <div id="ccModalBrand" class="cc-modal-brand"></div>
+      <div id="ccModalTitle" class="cc-modal-title"></div>
+      <div id="ccModalProduct" class="cc-modal-product"></div>
+      <hr class="cc-modal-divider">
+      <div class="cc-modal-detail-label">Notes</div>
+      <div id="ccModalNotes" class="cc-modal-detail-value"></div>
+      <div class="cc-modal-detail-label">Completed</div>
+      <div id="ccModalDate" class="cc-modal-detail-value"></div>
+      <div><span class="cc-modal-badge">✦ Challenge Complete ✦</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-links">
+  <a class="nav-link" href="https://anjelabug.github.io/project-panjela/">← Project Panjela</a>
+  <a class="nav-link" href="https://sites.google.com/view/projectpanopoly" target="_blank">Panopoly Rules ↗</a>
+</div>
+
+<!-- HEADER -->
+<header class="page-header">
+  <div class="page-title">Project <span>Panopoly</span></div>
+  <div class="page-sub">A Panning Challenge · Created by Jami · <a href="https://www.youtube.com/@theimpulsivepanner" target="_blank">@theimpulsivepanner</a> on YouTube</div>
+  <div class="round-badge">Round 1</div>
+</header>
+
+<!-- OVERALL -->
+<div class="round-summary">
+  <div class="round-summary-label">Round Progress</div>
+  <div class="round-summary-bar-wrap"><div class="round-summary-bar" id="overallBar"></div></div>
+  <div class="round-summary-pct" id="overallPct">—</div>
+</div>
+
+<!-- ══ 🪻 PURPLE · Wheel 1 · Gleam & Glow / Color Flash ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--purple)"></div>
+  <div class="color-group-name">🪻 Gleam & Glow · Color Flash · Wheel 1</div>
+  <div class="color-group-status">1 collected when complete</div>
+</div>
+
+<div class="property-card" id="card-irl">
+  <div class="deed-color-bar bar-purple" onclick="toggleCard('irl')">
+    <div><div class="group-label">Wheel 1 · Skincare / Body / Hair</div><div class="property-name">Color Flash</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Least Used</div>
+    <div class="deed-subtitle">e.l.f. Cosmetics · Halo Glow Beauty Wand · IRL Angel</div>
+    <div class="deed-buildings" id="buildings-irl"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-irl" style="background:var(--purple);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-irl">0 / 5</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Least Used — a product that has barely been touched. Give it dedicated attention.</div>
+      <div class="deed-detail">Wheel 1 · 5 uses · Silver-white highlighter wand. Continuing the Halo Glow wand evaluation — how does IRL Angel compare to Pink Prism?</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">e.l.f. Cosmetics</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Halo Glow Beauty Wand Highlighter</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">IRL Angel (pearlescent white/silver)</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/25/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 5</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('irl',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-irl">0</div><div class="deed-counter-target">of 5 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('irl',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-irl"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-irl" style="background:var(--purple);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-irl">0%</span><span>5 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-irl"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-irl" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('irl')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of IRL Angel from the Color Flash collection! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 🌸 MAGENTA · Wheel 2 · The Vivid Collection / Lumie / Face Forward ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--magenta)"></div>
+  <div class="color-group-name">🌸 The Vivid Collection · Lumie · Face Forward · Wheel 2</div>
+  <div class="color-group-status">2 collected when complete</div>
+</div>
+
+<div class="property-card" id="card-blush">
+  <div class="deed-color-bar bar-magenta" onclick="toggleCard('blush')">
+    <div><div class="group-label">Wheel 2 · Base Products</div><div class="property-name">The Vivid Collection</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Blush</div>
+    <div class="deed-subtitle">Rare Beauty · Soft Pinch Liquid Blush · Spirited</div>
+    <div class="deed-buildings" id="buildings-blush"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-blush" style="background:var(--magenta);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-blush">0 / 20</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Blush — use and evaluate a blush product across 20 wears.</div>
+      <div class="deed-detail">Wheel 4 · 20 uses · Mid-tone violet liquid blush. Cool-toned soft goth anchor.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Rare Beauty</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Soft Pinch Liquid Blush</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Spirited (mid-tone violet)</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">—</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 20</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('blush',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-blush">0</div><div class="deed-counter-target">of 20 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('blush',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-blush"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-blush" style="background:var(--magenta);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-blush">0%</span><span>20 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-blush"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-blush" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('blush')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of Spirited from The Vivid Collection! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<div class="property-card" id="card-cream">
+  <div class="deed-color-bar bar-magenta" onclick="toggleCard('cream')">
+    <div><div class="group-label">Wheel 2 · Base Products</div><div class="property-name">Lumie</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Cream Product</div>
+    <div class="deed-subtitle">Makeup by Mario · SoftSculpt Cream Contour & Bronzer · Fair</div>
+    <div class="deed-buildings" id="buildings-cream"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-cream" style="background:var(--magenta);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-cream">0 / 10</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Cream Product — use and evaluate a cream face product across 10 wears.</div>
+      <div class="deed-detail">Wheel 4 · 10 uses · First dedicated bronzer/contour challenge. Can be used as either.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Makeup by Mario</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">SoftSculpt Cream Contour & Bronzer</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Fair</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/18/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 10</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('cream',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-cream">0</div><div class="deed-counter-target">of 10 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('cream',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-cream"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-cream" style="background:var(--magenta);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-cream">0%</span><span>10 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-cream"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-cream" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('cream')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of SoftSculpt from Lumie! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 🌟 YELLOW · Wheel 3 · Shine Bright / Aurum / Solène ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--yellow);border-color:rgba(0,0,0,0.2)"></div>
+  <div class="color-group-name">🌟 Shine Bright · Aurum · Solène · Wheel 3</div>
+  <div class="color-group-status">Full set collected! 🏠🏠🏠</div>
+</div>
+
+<!-- ══ 🍷 RED · Wheel 5 · Ava Clair / The Radiance Lab / Maison Velour ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--red)"></div>
+  <div class="color-group-name">🍷 Ava Clair · The Radiance Lab · Maison Velour · Wheel 5</div>
+  <div class="color-group-status">1 collected when complete</div>
+</div>
+
+<div class="property-card" id="card-lip">
+  <div class="deed-color-bar bar-red" onclick="toggleCard('lip')">
+    <div><div class="group-label">Wheel 5 · Lip / Eye / Nail / Brow</div><div class="property-name">Ava Clair</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Lip</div>
+    <div class="deed-subtitle">MAC · Lip Pencil Creamy Lip Liner · Nightmoth</div>
+    <div class="deed-buildings" id="buildings-lip"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-lip" style="background:var(--red);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-lip">0 / 5</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Lip — use and evaluate a lip product across 5 wears.</div>
+      <div class="deed-detail">Wheel 5 · 5 uses · Deep plum-black liner. Chosen to coordinate with Blackberry Sorbet in Deck of Panning — dark romance pairing.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">MAC</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Lip Pencil Creamy Lip Liner</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Nightmoth (deep plum-black)</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/27/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 5</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('lip',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-lip">0</div><div class="deed-counter-target">of 5 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('lip',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-lip"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-lip" style="background:var(--red);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-lip">0%</span><span>5 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-lip"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-lip" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('lip')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of Nightmoth from Ava Clair! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 🌿 GREEN · Wheel 4 · Beauty By Tay / Earthlight / Serenity ══ -->
+<div class="color-group-header">
+  <div class="color-group-swatch" style="background:var(--green)"></div>
+  <div class="color-group-name">🌿 Beauty By Tay · Earthlight · Serenity · Wheel 4</div>
+  <div class="color-group-status">1 collected when complete</div>
+</div>
+
+<div class="property-card" id="card-powder">
+  <div class="deed-color-bar bar-green" onclick="toggleCard('powder')">
+    <div><div class="group-label">Wheel 4 · Cheek / Textural</div><div class="property-name">Beauty By Tay</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Powder</div>
+    <div class="deed-subtitle">e.l.f. Cosmetics · Halo Glow Loose Setting Powder · Light Pink</div>
+    <div class="deed-buildings" id="buildings-powder"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-powder" style="background:var(--green);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-powder">Full</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Powder — use and evaluate a powder product. Goal: full pan!</div>
+      <div class="deed-detail">Wheel 4 · Pan it! · Daily use powder that's already getting low. The perfect candidate for a full pan goal.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">e.l.f. Cosmetics</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Halo Glow Loose Setting Powder</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Light Pink</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">5/28/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses Counter</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustPowderCount(-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-powder">0</div><div class="deed-counter-target">uses logged</div></div>
+        <button class="deed-btn" onclick="adjustPowderCount(1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-powder"></div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Pan Progress</div>
+      <select class="deed-note-input" style="font-family:'Libre Baskerville',serif;font-size:0.8rem;min-height:unset;padding:0.4rem 0.6rem;" id="pan-powder" onchange="savePowderPan()">
+        <option value="full">Full — just started</option>
+        <option value="75">~75% remaining</option>
+        <option value="50">~50% remaining — halfway!</option>
+        <option value="25">~25% remaining — almost there!</option>
+        <option value="nearly">Nearly gone</option>
+        <option value="panned">🫙 Panned!</option>
+      </select>
+      <div class="deed-full-progress" style="margin-top:0.5rem">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-powder" style="background:var(--green);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-powder">Full</span><span>Pan it!</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-powder"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-powder" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('powder')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">You're now the proud owner of Halo Glow Powder from Beauty By Tay! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COLLECTED ══ -->
+<div class="collected-section">
+  <div class="collected-caption">Properties Acquired · Challenges Completed</div>
+  <div class="collected-table">
+
+    <div class="collected-card" onclick="openModal({bar:'var(--darkblue)',brand:'Seraphine · Dark Blue',title:'Eye Product · 7 uses',product:'about-face Shadow Fix Eye Primer',notes:'Affordable, reliable option; WRP.',date:'5/18/2026'})">
+      <div class="cc-color-bar" style="background:var(--darkblue)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Eye Product · 7</div>
+        <div class="cc-product">about-face Shadow Fix</div>
+        <div class="cc-brand">Seraphine 🦋</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--red)',brand:'Ava Clair · Red',title:'Bold Look · 10 uses',product:'e.l.f. Sheer Slick Lipstick · Black Cherry',notes:'Very pink sheer product, no fragrance.',date:'5/19/2026'})">
+      <div class="cc-color-bar" style="background:var(--red)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Bold Look · 10</div>
+        <div class="cc-product">e.l.f. Black Cherry</div>
+        <div class="cc-brand">Ava Clair 🍷</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--yellow)',brand:'Shine Bright · Yellow',title:'Least Used · 5 uses',product:'Holika Holika Classic Pottery Palette',notes:'A beautifully wearable everyday palette. Confirmed keeper.',date:'5/21/2026'})">
+      <div class="cc-color-bar" style="background:var(--yellow)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Least Used · 5</div>
+        <div class="cc-product">HH Classic Pottery</div>
+        <div class="cc-brand">Shine Bright 🌟</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--purple)',brand:'Gleam & Glow · Purple',title:'Haircare · 5 uses',product:'Batiste Dry Powder Shampoo · Dark',notes:'Works well. WNRP — prefer Bare fragrance.',date:'5/25/2026'})">
+      <div class="cc-color-bar" style="background:var(--purple)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Haircare · 5</div>
+        <div class="cc-product">Batiste Dark</div>
+        <div class="cc-brand">Gleam & Glow 🪻</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--yellow)',brand:'Solène · Yellow',title:'Newest · 10 uses',product:'Prequel Skin AM/PM Modern Moisturizer',notes:'Outstanding formula, new go-to PM moisturizer. Works for the body as well!',date:'5/27/2026'})">
+      <div class="cc-color-bar" style="background:var(--yellow)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Newest · 10</div>
+        <div class="cc-product">Prequel AM/PM</div>
+        <div class="cc-brand">Solène 🌟</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+    <div class="collected-card" onclick="openModal({bar:'var(--yellow)',brand:'Aurum · Yellow',title:'Most Used · 10 uses',product:'Benefit 24-Hour Brow Setter',notes:'Holy grail brow gel with a perfect wand.',date:'5/28/2026'})">
+      <div class="cc-color-bar" style="background:var(--yellow)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Most Used · 10</div>
+        <div class="cc-product">Benefit Brow Setter</div>
+        <div class="cc-brand">Aurum 🌟</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer style="text-align:center;margin-top:3rem;font-size:0.5rem;letter-spacing:0.12em;color:rgba(26,22,20,0.4);text-transform:uppercase;font-family:'DM Mono',monospace;">
+  Project Panopoly · Round 1 · anjelabug.github.io/project-panjela
+</footer>
+
+<script>
+const TARGETS = { irl:5, blush:20, cream:10, lip:5 };
+const PAN_PCT_P = { full:0, '75':25, '50':50, '25':75, nearly:90, panned:100 };
+const PAN_LBL_P = { full:'Full', '75':'~75% remaining', '50':'Halfway!', '25':'~25% remaining', nearly:'Nearly gone!', panned:'🫙 Panned!' };
+const KEY = 'project-panopoly-r1';
+
+function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } }
+function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {} }
+
+function seedHistoricalData() {
+  const d = load();
+  if (Object.keys(d).length === 0) {
+    save({
+      irl:      { count: 1,  lastUsed: '5/27/2026', notes: [] },
+      blush:    { count: 9,  lastUsed: '5/27/2026', notes: [] },
+      cream:    { count: 5,  lastUsed: '5/27/2026', notes: [] },
+      lip:      { count: 0,  lastUsed: null,         notes: [] },
+      powder:   { count: 0,  lastUsed: null,         notes: [], panLevel: 'full' },
+    });
+  }
+}
+
+function toggleCard(id) { document.getElementById('card-'+id).classList.toggle('open'); }
+
+function adjustPowderCount(delta) {
+  if (delta > 0) { const n=new Date(); d.powder.lastUsed=(n.getMonth()+1)+'/'+n.getDate()+'/'+n.getFullYear(); }
+  save(d); renderPowder(d.powder); updateOverall();
+}
+
+function savePowderPan() {
+  const d = load();
+  if (!d.powder) d.powder = { count:0, notes:[], lastUsed:null, panLevel:'full' };
+  d.powder.panLevel = document.getElementById('pan-powder').value;
+  save(d); renderPowder(d.powder); updateOverall();
+  if (d.powder.panLevel === 'panned') celebrate('powder');
+}
+
+function renderPowder(data) {
+  const count = data.count||0;
+  const pl = data.panLevel||'full';
+  document.getElementById('num-powder').textContent = count;
+  const le = document.getElementById('last-powder');
+  if (le) le.textContent = data.lastUsed ? 'Last used '+data.lastUsed : '';
+  document.getElementById('pan-powder').value = pl;
+  const pp = PAN_PCT_P[pl]||0;
+  document.getElementById('fill-powder').style.width = pp+'%';
+  document.getElementById('pct-powder').textContent = PAN_LBL_P[pl]||'Full';
+  document.getElementById('count-powder').textContent = count+' uses · '+(PAN_LBL_P[pl]||'Full');
+  document.getElementById('card-powder').classList.toggle('complete', pl==='panned');
+  renderNotes('powder', data.notes||[]);
+}
+
+function adjustCount(id, delta) {
+  const d = load();
+  if (!d[id]) d[id] = { count:0, notes:[], lastUsed:null };
+  d[id].count = Math.max(0, (d[id].count||0) + delta);
+  if (delta > 0) { const n=new Date(); d[id].lastUsed=(n.getMonth()+1)+'/'+n.getDate()+'/'+n.getFullYear(); }
+  save(d); renderCard(id, d[id]); updateOverall();
+  if (delta > 0 && d[id].count >= TARGETS[id]) celebrate(id);
+}
+
+function addNote(id) {
+  const inp = document.getElementById('input-'+id);
+  const text = inp.value.trim(); if (!text) return;
+  const d = load();
+  if (!d[id]) d[id] = { count:0, notes:[], lastUsed:null };
+  if (!d[id].notes) d[id].notes = [];
+  const n=new Date();
+  const ts=(n.getMonth()+1)+'/'+n.getDate()+'/'+n.getFullYear()+' '+n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  d[id].notes.push({ts,text}); save(d); inp.value=''; renderNotes(id, d[id].notes);
+}
+
+function renderCard(id, data) {
+  const count = data.count||0;
+  const target = TARGETS[id];
+  const pct = Math.min(100, Math.round(count/target*100));
+  document.getElementById('num-'+id).textContent = count;
+  document.getElementById('count-'+id).textContent = count+' / '+target;
+  document.getElementById('bar-'+id).style.width = pct+'%';
+  document.getElementById('fill-'+id).style.width = pct+'%';
+  document.getElementById('pct-'+id).textContent = pct+'%';
+  const le = document.getElementById('last-'+id);
+  if (le) le.textContent = data.lastUsed ? 'Last used '+data.lastUsed : '';
+  document.getElementById('card-'+id).classList.toggle('complete', count >= target);
+  renderNotes(id, data.notes||[]);
+}
+
+function renderNotes(id, notes) {
+  const log = document.getElementById('log-'+id); if (!log) return;
+  if (!notes||!notes.length) { log.innerHTML='<div class="deed-note-empty">No notes yet.</div>'; return; }
+  log.innerHTML = notes.map(n=>`<div class="deed-note-entry"><div class="deed-note-ts">${n.ts}</div><div class="deed-note-text">${esc(n.text)}</div></div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateOverall() {
+  const d = load();
+  let total=0, current=0;
+  Object.keys(TARGETS).forEach(id => {
+    total += TARGETS[id];
+    current += Math.min((d[id]&&d[id].count)||0, TARGETS[id]);
+  });
+  // powder pan
+  const pl=(d.powder&&d.powder.panLevel)||'full';
+  total+=100; current+=PAN_PCT_P[pl]||0;
+  const pct = total>0 ? Math.round(current/total*100) : 0;
+  document.getElementById('overallBar').style.width = pct+'%';
+  document.getElementById('overallPct').textContent = pct+'%';
+}
+
+function openModal(info) {
+  document.getElementById('ccModalBar').style.background = info.bar;
+  document.getElementById('ccModalBrand').textContent = info.brand;
+  document.getElementById('ccModalTitle').textContent = info.title;
+  document.getElementById('ccModalProduct').textContent = info.product;
+  document.getElementById('ccModalNotes').textContent = info.notes;
+  document.getElementById('ccModalDate').textContent = info.date;
+  document.getElementById('ccModalBackdrop').classList.add('open');
+}
+function closeModal(e) { if (e.target===document.getElementById('ccModalBackdrop')) closeModalBtn(); }
+function closeModalBtn() { document.getElementById('ccModalBackdrop').classList.remove('open'); }
+
+function celebrate(id) {
+  const colors=['#6B2D8B','#D93A96','#F9E84C','#00A950','#ED1B24','#1B3A8C','#FDFAF5'];
+  const container = document.getElementById('confettiContainer');
+  for(let i=0;i<50;i++) setTimeout(()=>{
+    const p=document.createElement('div'); p.classList.add('confetti-piece');
+    p.style.cssText=`left:${Math.random()*100}vw;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'1px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.4}s;`;
+    container.appendChild(p); setTimeout(()=>p.remove(),4000);
+  },i*35);
+}
+
+// INIT
+seedHistoricalData();
+const d = load();
+Object.keys(TARGETS).forEach(id => renderCard(id, d[id]||{count:0,notes:[],lastUsed:null}));
+renderPowder(d.powder||{count:0,notes:[],lastUsed:null,panLevel:'full'});
+updateOverall();
+</script>
+</body>
+</html>
