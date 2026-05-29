@@ -826,7 +826,7 @@ function seedHistoricalData() {
       blush:    { count: 10, lastUsed: '5/28/2026', notes: [] },
       cream:    { count: 6,  lastUsed: '5/28/2026', notes: [] },
       lip:      { count: 1,  lastUsed: '5/28/2026', notes: [] },
-      powder:   { count: 0,  lastUsed: null,         notes: [], panLevel: '25' },
+      powder:   { count: 1,  lastUsed: '5/29/2026',  notes: [], panLevel: '25' },
     });
   }
 }
@@ -834,6 +834,9 @@ function seedHistoricalData() {
 function toggleCard(id) { document.getElementById('card-'+id).classList.toggle('open'); }
 
 function adjustPowderCount(delta) {
+  const d = load();
+  if (!d.powder) d.powder = { count:0, notes:[], lastUsed:null, panLevel:'full' };
+  d.powder.count = Math.max(0, (d.powder.count||0) + delta);
   if (delta > 0) { const n=new Date(); d.powder.lastUsed=(n.getMonth()+1)+'/'+n.getDate()+'/'+n.getFullYear(); }
   save(d); renderPowder(d.powder); updateOverall();
 }
