@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Washington State Parks – Family Trail Log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #0e1117;
+      font-family: 'Source Serif 4', Georgia, serif;
+      color: #e8e0d4;
+      min-height: 100vh;
+    }
+
+    /* ── Stars background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 25%, rgba(255,255,255,0.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 55%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 20% 70%, rgba(255,255,255,0.15) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 65% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 45% 60%, rgba(255,255,255,0.2) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    #root { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(180deg, #0a1628 0%, #0e1117 100%);
+      border-bottom: 1px solid rgba(168,210,220,0.15);
+      padding: 48px 24px 0;
+    }
+    .header-inner {
+      max-width: 860px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 24px; padding-bottom: 32px;
+    }
+    .eyebrow {
+      font-family: 'Source Serif 4', serif;
+      font-size: 10px; letter-spacing: 5px; font-weight: 300;
+      color: #7eb8c4; margin-bottom: 8px; text-transform: uppercase;
+    }
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px; font-weight: 900; line-height: 0.95;
+      color: #f0ebe2; letter-spacing: -1px; margin-bottom: 6px;
+    }
+    .title span { color: #7eb8c4; }
+    .subtitle { font-size: 15px; color: #8a9aa8; font-style: italic; font-weight: 300; }
+
+    /* ── Family stats ── */
+    .family-stats {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .person-stat {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 14px 20px; min-width: 90px;
+    }
+    .person-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; margin-bottom: 6px;
+      font-family: 'Playfair Display', serif;
+    }
+    .person-count { font-size: 26px; font-weight: 700; font-family: 'Playfair Display', serif; line-height: 1; }
+    .person-label { font-size: 10px; color: #8a9aa8; font-family: 'Source Serif 4', serif; font-weight: 300; letter-spacing: 1px; margin-top: 2px; }
+    .person-bar { width: 60px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .person-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+
+    /* ── Filters ── */
+    .filters-row {
+      max-width: 860px; margin: 0 auto;
+      display: flex; align-items: center; gap: 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: none; border: none; color: rgba(255,255,255,0.35);
+      padding: 13px 18px; cursor: pointer; font-size: 12px;
+      font-family: 'Source Serif 4', serif; letter-spacing: 1px;
+      border-bottom: 2px solid transparent; transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .filter-btn.active { color: #7eb8c4; border-bottom: 2px solid #7eb8c4; }
+    .filter-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 4px; }
+
+    /* ── Sync bar ── */
+    .sync-bar {
+      max-width: 860px; margin: 0 auto 0;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0 14px; flex-wrap: wrap;
+    }
+    .sync-status { font-size: 11px; font-family: monospace; padding: 4px 10px; border-radius: 20px; }
+    .sync-status.ok { background: rgba(100,200,120,0.12); color: #7ecf8a; border: 1px solid rgba(100,200,120,0.25); }
+    .sync-status.err { background: rgba(220,100,80,0.12); color: #e08878; border: 1px solid rgba(220,100,80,0.25); }
+    .sync-status.idle { background: rgba(255,255,255,0.05); color: #8a9aa8; border: 1px solid rgba(255,255,255,0.1); }
+    .sync-status.busy { background: rgba(126,184,196,0.1); color: #7eb8c4; border: 1px solid rgba(126,184,196,0.25); }
+    .sync-btn {
+      background: rgba(126,184,196,0.1); border: 1px solid rgba(126,184,196,0.3);
+      color: #7eb8c4; border-radius: 6px; padding: 4px 12px;
+      font-size: 11px; font-family: monospace; cursor: pointer; transition: all 0.2s;
+    }
+    .sync-btn:hover { background: rgba(126,184,196,0.2); }
+    .settings-btn {
+      margin-left: auto; background: none; border: 1px solid rgba(255,255,255,0.1);
+      color: #8a9aa8; border-radius: 6px; padding: 4px 12px;
+      font-size: 11px; font-family: monospace; cursor: pointer; transition: all 0.2s;
+    }
+    .settings-btn:hover { border-color: rgba(255,255,255,0.25); color: #e8e0d4; }
+
+    /* ── Content ── */
+    .content {
+      max-width: 860px; margin: 0 auto;
+      padding: 28px 16px 80px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    /* ── Region card ── */
+    .region-card {
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(4px);
+      transition: border-color 0.2s;
+    }
+    .region-card:hover { border-color: rgba(255,255,255,0.14); }
+
+    .region-header {
+      width: 100%; border: none; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 22px; text-align: left;
+      transition: background 0.2s;
+    }
+    .region-header:hover { filter: brightness(1.08); }
+    .region-left { display: flex; align-items: center; gap: 16px; }
+    .region-emoji { font-size: 26px; }
+    .region-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700; color: #f0ebe2; letter-spacing: -0.2px;
+    }
+    .region-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .person-mini-counts { display: flex; gap: 8px; }
+    .person-mini {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .person-mini-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .person-mini-num { font-size: 10px; font-family: monospace; opacity: 0.7; }
+    .chevron { font-size: 14px; opacity: 0.5; margin-left: 6px; }
+
+    /* ── Park list ── */
+    .park-list { padding: 4px 0 8px; }
+    .park-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      padding: 10px 22px;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    .park-row:last-child { border-bottom: none; }
+    .park-row:hover { background: rgba(255,255,255,0.03); }
+
+    .park-name-area { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .park-name {
+      font-size: 14px; font-weight: 400; color: #d4ccbe;
+      transition: color 0.2s; line-height: 1.4;
+    }
+
+    /* Per-person rows under park name */
+    .person-rows { display: flex; flex-direction: column; gap: 2px; }
+    .person-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .person-check-label {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      flex-shrink: 0;
+    }
+    .person-check-label input[type="checkbox"] {
+      width: 14px; height: 14px; cursor: pointer; flex-shrink: 0;
+    }
+    .person-chip {
+      font-size: 10px; font-family: monospace; letter-spacing: 0.5px;
+      padding: 1px 7px; border-radius: 10px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .person-visit-time {
+      font-size: 10px; color: #7a8a94; font-style: italic;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .person-note-preview {
+      font-size: 10px; color: #6a7a84; font-style: italic;
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+      max-width: 240px;
+    }
+
+    .park-actions { display: flex; align-items: flex-start; gap: 6px; padding-top: 2px; flex-shrink: 0; }
+    .note-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      color: #7a8a94; border-radius: 6px; padding: 3px 9px;
+      font-size: 10px; cursor: pointer; font-family: monospace;
+      white-space: nowrap; transition: all 0.15s;
+    }
+    .note-btn:hover { border-color: rgba(255,255,255,0.25); color: #e8e0d4; }
+
+    /* ── Overlay / Modal ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
+      backdrop-filter: blur(3px);
+    }
+    .modal {
+      background: #161c28;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px; padding: 32px;
+      width: 100%; max-width: 520px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-park-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700; color: #f0ebe2;
+      margin-bottom: 6px;
+    }
+    .modal-subtitle { font-size: 12px; color: #8a9aa8; font-style: italic; margin-bottom: 24px; }
+    .modal-person-section { margin-bottom: 22px; }
+    .modal-person-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+      padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .modal-person-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; font-family: 'Playfair Display', serif;
+    }
+    .modal-person-name { font-size: 14px; font-weight: 600; }
+    .modal-visited-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .modal-visited-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+    .modal-visited-label { font-size: 13px; color: #b0a898; cursor: pointer; }
+    .modal-label {
+      display: block; font-size: 10px; font-family: monospace;
+      letter-spacing: 1.5px; color: #6a7a84; margin-bottom: 5px; text-transform: uppercase;
+    }
+    .modal-input {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+      padding: 9px 12px; font-size: 13px; margin-bottom: 10px;
+      font-family: 'Source Serif 4', serif; outline: none; color: #e8e0d4;
+      transition: border-color 0.2s;
+    }
+    .modal-input:focus { border-color: rgba(126,184,196,0.4); }
+    .modal-textarea {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+      padding: 9px 12px; font-size: 13px; margin-bottom: 10px;
+      font-family: 'Source Serif 4', serif; resize: vertical; outline: none;
+      color: #e8e0d4; line-height: 1.6; transition: border-color 0.2s;
+    }
+    .modal-textarea:focus { border-color: rgba(126,184,196,0.4); }
+    .modal-actions {
+      display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;
+    }
+    .cancel-btn {
+      border: 1px solid rgba(255,255,255,0.12); background: none;
+      border-radius: 8px; padding: 10px 22px; font-size: 13px;
+      cursor: pointer; font-family: 'Source Serif 4', serif; color: #8a9aa8;
+      transition: all 0.2s;
+    }
+    .cancel-btn:hover { border-color: rgba(255,255,255,0.25); color: #e8e0d4; }
+    .save-btn {
+      border: none; background: #7eb8c4; color: #0a1628;
+      border-radius: 8px; padding: 10px 26px; font-size: 13px;
+      cursor: pointer; font-family: 'Source Serif 4', serif; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .save-btn:hover { background: #9fccd6; }
+
+    /* ── Settings modal ── */
+    .settings-section { margin-bottom: 20px; }
+    .settings-title {
+      font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
+      color: #f0ebe2; margin-bottom: 4px;
+    }
+    .settings-subtitle { font-size: 12px; color: #8a9aa8; font-style: italic; margin-bottom: 24px; }
+    .settings-help {
+      font-size: 12px; color: #6a7a84; line-height: 1.6;
+      background: rgba(255,255,255,0.03); border-radius: 8px;
+      padding: 12px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06);
+    }
+    .settings-help a { color: #7eb8c4; }
+    .settings-divider { border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 20px 0; }
+    .danger-btn {
+      border: 1px solid rgba(220,100,80,0.3); background: none;
+      color: #e08878; border-radius: 8px; padding: 8px 16px;
+      font-size: 12px; cursor: pointer; font-family: monospace; transition: all 0.2s;
+    }
+    .danger-btn:hover { background: rgba(220,100,80,0.1); }
+
+    @media (max-width: 560px) {
+      .title { font-size: 38px; }
+      .family-stats { gap: 10px; }
+      .person-stat { padding: 10px 14px; min-width: 72px; }
+      .park-row { grid-template-columns: 1fr; }
+      .park-actions { padding-top: 0; }
+      .person-mini-counts { display: none; }
+      .filter-btn { padding: 10px 12px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+// ── People config ──────────────────────────────────────────────
+const PEOPLE = [
+  { id: "anjela", name: "Anjela", initial: "A", color: "#3dbfbf", bg: "rgba(61,191,191,0.15)", accent: "#5dd4d4" },
+  { id: "grant",  name: "Grant",  initial: "G", color: "#a070d8", bg: "rgba(160,112,216,0.15)", accent: "#bc90e8" },
+  { id: "julian", name: "Julian", initial: "J", color: "#e05050", bg: "rgba(224,80,80,0.15)",  accent: "#f07070" },
+];
+
+// ── Parks data ─────────────────────────────────────────────────
+const REGIONS = [
+  { id:"olympic", name:"Olympic Peninsula", emoji:"🌲", headerBg:"linear-gradient(135deg,#1a3028,#0f2018)",
+    parks:["Bogachiel State Park","Dosewallips State Park","Fort Flagler State Park","Fort Townsend State Park","Fort Worden State Park","Illahee State Park","Kitsap Memorial State Park","Penrose Point State Park","Potlatch State Park","Scenic Beach State Park","Sequim Bay State Park","Twanoh State Park"] },
+  { id:"puget", name:"Puget Sound & Islands", emoji:"⛵", headerBg:"linear-gradient(135deg,#0e1e30,#081525)",
+    parks:["Bay View State Park","Blake Island Marine State Park","Burrows Island Lighthouse State Park","Camano Island State Park","Cama Beach State Park","Deception Pass State Park","Ebey's Landing State Park","Fort Casey State Park","Fort Ebey State Park","Jarrell Cove State Park","Joemma Beach State Park","Kopachuck State Park","Larrabee State Park","Manchester State Park","Moran State Park","Mystery Bay State Park","Obstruction Pass State Park","Rasar State Park","Rockport State Park","Saltwater State Park","Spencer Spit State Park","Squak Mountain State Park","Stretch Island State Park","Sucia Island Marine State Park","Triton Cove State Park","Wallace Falls State Park"] },
+  { id:"cascades-north", name:"North Cascades", emoji:"🏔️", headerBg:"linear-gradient(135deg,#201810,#160e08)",
+    parks:["Alta Lake State Park","Beacon Rock State Park","Bridle Trails State Park","Daroga State Park","Lake Chelan State Park","Lake Wenatchee State Park","Leavenworth Area State Parks","Pearrygin Lake State Park","Peshastin Pinnacles State Park","Squilchuck State Recreation Area","Steamboat Rock State Park","Sun Lakes–Dry Falls State Park"] },
+  { id:"cascades-south", name:"South Cascades & Rainier", emoji:"🌋", headerBg:"linear-gradient(135deg,#281408,#1a0c04)",
+    parks:["Brooks Memorial State Park","Federation Forest State Park","Ginkgo Petrified Forest State Park","Goldendale Observatory State Park","Iron Horse State Park","Kanaskat-Palmer State Park","Kautz Creek State Park","Lake Easton State Park","Millersylvania State Park","Mount Spokane State Park","Nolte State Park","Ohanapecosh State Park","Olmstead Place State Park","Palouse Falls State Park","Riverside State Park","Steptoe Butte State Park"] },
+  { id:"coast", name:"Pacific Coast", emoji:"🌊", headerBg:"linear-gradient(135deg,#081c24,#041218)",
+    parks:["Cape Disappointment State Park","Columbia Hills State Park","Leadbetter Point State Park","Ocean City State Park","Pacific Beach State Park","Seaquest State Park","Twin Harbors State Park","Westport Light State Park"] },
+  { id:"eastern", name:"Eastern Washington", emoji:"🌾", headerBg:"linear-gradient(135deg,#201808,#160e04)",
+    parks:["Conconully State Park","Crawford State Park","Fields Spring State Park","Fishtrap Lake State Park","Flaming Geyser State Park","Granite Falls State Park","Hawk Creek","Lake Roosevelt National Recreation Area","Lake Sylvia State Park","Lewis and Clark Trail State Park","Long Lake","Lyons Ferry State Park","Potholes State Park","Spring Valley","Wenatchee Confluence State Park","Windust State Park"] },
+  { id:"metro", name:"Metro & Southwest", emoji:"🌆", headerBg:"linear-gradient(135deg,#141428,#0c0c1c)",
+    parks:["Battle Ground Lake State Park","Dash Point State Park","Fort Columbia State Park","Fort Simcoe State Park","Ike Kinswa State Park","Lake Sammamish State Park","Maryhill State Park","Nisqually National Wildlife Refuge","Tenino Tahoma Nature Area","Yakima Sportsman State Park"] },
+];
+
+const TOTAL_PARKS = REGIONS.reduce((s,r) => s + r.parks.length, 0);
+const STORAGE_KEY = "wa-parks-family-v1";
+const SETTINGS_KEY = "wa-parks-settings-v1";
+
+// ── Persistence helpers ────────────────────────────────────────
+function loadLocal() {
+  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : {}; } catch { return {}; }
+}
+function saveLocal(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+}
+function loadSettings() {
+  try { const r = localStorage.getItem(SETTINGS_KEY); return r ? JSON.parse(r) : { token:"", gistId:"" }; } catch { return { token:"", gistId:"" }; }
+}
+function saveSettings(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch {}
+}
+
+// ── Gist API helpers ───────────────────────────────────────────
+const GIST_FILENAME = "wa-parks-data.json";
+
+async function gistLoad(token, gistId) {
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" }
+  });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+  const data = await res.json();
+  const content = data.files?.[GIST_FILENAME]?.content;
+  if (!content) throw new Error("File not found in Gist");
+  return JSON.parse(content);
+}
+
+async function gistSave(token, gistId, parkData) {
+  const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(parkData, null, 2) } } })
+  });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+}
+
+async function gistCreate(token) {
+  const res = await fetch("https://api.github.com/gists", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+    body: JSON.stringify({ description: "Washington State Parks Family Log", public: false, files: { [GIST_FILENAME]: { content: JSON.stringify({}, null, 2) } } })
+  });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+  const data = await res.json();
+  return data.id;
+}
+
+// ── Main App ───────────────────────────────────────────────────
+function App() {
+  const [parkData, setParkData] = useState(loadLocal);
+  const [settings, setSettings] = useState(loadSettings);
+  const [openRegions, setOpenRegions] = useState({});
+  const [editingPark, setEditingPark] = useState(null);
+  const [editDraft, setEditDraft] = useState({});
+  const [filter, setFilter] = useState("all"); // all | person id
+  const [syncStatus, setSyncStatus] = useState("idle"); // idle | busy | ok | err
+  const [syncMsg, setSyncMsg] = useState("Not connected");
+  const [showSettings, setShowSettings] = useState(false);
+  const [settingsDraft, setSettingsDraft] = useState(loadSettings);
+  const saveTimer = useRef(null);
+
+  // Auto-save to localStorage
+  useEffect(() => { saveLocal(parkData); }, [parkData]);
+
+  // Auto-sync to Gist (debounced 2s after change)
+  useEffect(() => {
+    if (!settings.token || !settings.gistId) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => { syncToGist(parkData, settings); }, 2000);
+    return () => clearTimeout(saveTimer.current);
+  }, [parkData, settings]);
+
+  async function syncToGist(data, cfg) {
+    if (!cfg.token || !cfg.gistId) return;
+    setSyncStatus("busy"); setSyncMsg("Saving…");
+    try {
+      await gistSave(cfg.token, cfg.gistId, data);
+      setSyncStatus("ok"); setSyncMsg("Saved to Gist ✓");
+    } catch(e) {
+      setSyncStatus("err"); setSyncMsg("Save failed: " + e.message);
+    }
+  }
+
+  async function loadFromGist() {
+    if (!settings.token || !settings.gistId) { setSyncStatus("err"); setSyncMsg("No token/Gist ID set"); return; }
+    setSyncStatus("busy"); setSyncMsg("Loading…");
+    try {
+      const data = await gistLoad(settings.token, settings.gistId);
+      setParkData(data);
+      setSyncStatus("ok"); setSyncMsg("Loaded from Gist ✓");
+    } catch(e) {
+      setSyncStatus("err"); setSyncMsg("Load failed: " + e.message);
+    }
+  }
+
+  async function handleCreateGist() {
+    if (!settingsDraft.token) { alert("Enter your GitHub token first."); return; }
+    setSyncStatus("busy"); setSyncMsg("Creating Gist…");
+    try {
+      const id = await gistCreate(settingsDraft.token);
+      const updated = { ...settingsDraft, gistId: id };
+      setSettingsDraft(updated);
+      setSettings(updated);
+      saveSettings(updated);
+      setSyncStatus("ok"); setSyncMsg("Gist created ✓");
+    } catch(e) {
+      setSyncStatus("err"); setSyncMsg("Error: " + e.message);
+    }
+  }
+
+  function saveSettingsAndClose() {
+    setSettings(settingsDraft);
+    saveSettings(settingsDraft);
+    setShowSettings(false);
+    setSyncStatus("idle"); setSyncMsg("Settings saved — will sync on next change");
+  }
+
+  // Per-person visit counts
+  function personVisitedCount(personId) {
+    return Object.values(parkData).filter(d => d?.[personId]?.visited).length;
+  }
+
+  function regionPersonCount(region, personId) {
+    return region.parks.filter(p => parkData[p]?.[personId]?.visited).length;
+  }
+
+  function toggleVisited(park, personId) {
+    setParkData(prev => ({
+      ...prev,
+      [park]: {
+        ...prev[park],
+        [personId]: {
+          ...prev[park]?.[personId],
+          visited: !prev[park]?.[personId]?.visited,
+        }
+      }
+    }));
+  }
+
+  function openNote(park) {
+    const draft = {};
+    PEOPLE.forEach(p => {
+      draft[p.id] = {
+        visited: !!parkData[park]?.[p.id]?.visited,
+        visitTime: parkData[park]?.[p.id]?.visitTime || "",
+        note: parkData[park]?.[p.id]?.note || "",
+      };
+    });
+    setEditDraft(draft);
+    setEditingPark(park);
+  }
+
+  function saveNote() {
+    setParkData(prev => ({
+      ...prev,
+      [editingPark]: {
+        ...prev[editingPark],
+        ...Object.fromEntries(PEOPLE.map(p => [p.id, editDraft[p.id]]))
+      }
+    }));
+    setEditingPark(null);
+  }
+
+  function updateDraft(personId, field, val) {
+    setEditDraft(prev => ({ ...prev, [personId]: { ...prev[personId], [field]: val } }));
+  }
+
+  function hasAnyData(park, personId) {
+    const d = parkData[park]?.[personId];
+    return d?.visited || d?.note || d?.visitTime;
+  }
+
+  function parkMatchesFilter(park) {
+    if (filter === "all") return true;
+    return !!parkData[park]?.[filter]?.visited;
+  }
+
+  function toggleRegion(id) {
+    setOpenRegions(prev => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  return (
+    <div className="root">
+      {/* ── Header ── */}
+      <div className="header">
+        <div className="header-inner">
+          <div>
+            <div className="eyebrow">Family Trail Log</div>
+            <h1 className="title">Washington<br/><span>State Parks</span></h1>
+            <div className="subtitle">Every trail tells a story</div>
+          </div>
+          <div className="family-stats">
+            {PEOPLE.map(p => {
+              const count = personVisitedCount(p.id);
+              const pct = count / TOTAL_PARKS;
+              return (
+                <div key={p.id} className="person-stat">
+                  <div className="person-avatar" style={{ background: p.bg, color: p.color }}>{p.initial}</div>
+                  <div className="person-count" style={{ color: p.color }}>{count}</div>
+                  <div className="person-label">{p.name}</div>
+                  <div className="person-bar">
+                    <div className="person-bar-fill" style={{ width: `${pct*100}%`, background: p.color }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="filters-row">
+          <button className={`filter-btn${filter==="all"?" active":""}`} onClick={()=>setFilter("all")}>All Parks</button>
+          <div className="filter-sep"/>
+          {PEOPLE.map(p => (
+            <button key={p.id} className={`filter-btn${filter===p.id?" active":""}`}
+              style={filter===p.id?{color:p.color,borderBottomColor:p.color}:{}}
+              onClick={()=>setFilter(filter===p.id?"all":p.id)}>
+              {p.name}'s Visits
+            </button>
+          ))}
+        </div>
+
+        {/* Sync bar */}
+        <div className="sync-bar">
+          <span className={`sync-status ${syncStatus}`}>{syncMsg}</span>
+          {settings.token && settings.gistId && (
+            <button className="sync-btn" onClick={loadFromGist}>↓ Load from Gist</button>
+          )}
+          <button className="settings-btn" onClick={()=>{ setSettingsDraft(settings); setShowSettings(true); }}>⚙ Gist Sync</button>
+        </div>
+      </div>
+
+      {/* ── Park list ── */}
+      <div className="content">
+        {REGIONS.map(region => {
+          const visibleParks = region.parks.filter(parkMatchesFilter);
+          if (visibleParks.length === 0) return null;
+          const isOpen = openRegions[region.id];
+          return (
+            <div key={region.id} className="region-card">
+              <button className="region-header" style={{ background: region.headerBg }} onClick={()=>toggleRegion(region.id)}>
+                <div className="region-left">
+                  <span className="region-emoji">{region.emoji}</span>
+                  <div>
+                    <div className="region-name">{region.name}</div>
+                  </div>
+                </div>
+                <div className="region-right">
+                  <div className="person-mini-counts">
+                    {PEOPLE.map(p => {
+                      const cnt = regionPersonCount(region, p.id);
+                      return (
+                        <div key={p.id} className="person-mini" title={`${p.name}: ${cnt}/${region.parks.length}`}>
+                          <div className="person-mini-dot" style={{ background: cnt > 0 ? p.color : "rgba(255,255,255,0.1)" }} />
+                          <div className="person-mini-num" style={{ color: cnt > 0 ? p.color : "rgba(255,255,255,0.2)" }}>{cnt}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <span className="chevron">{isOpen ? "▲" : "▼"}</span>
+                </div>
+              </button>
+
+              {isOpen && (
+                <div className="park-list">
+                  {visibleParks.map(park => (
+                    <div key={park} className="park-row">
+                      <div className="park-name-area">
+                        <div className="park-name">{park}</div>
+                        <div className="person-rows">
+                          {PEOPLE.map(p => {
+                            const d = parkData[park]?.[p.id] || {};
+                            return (
+                              <div key={p.id} className="person-row">
+                                <label className="person-check-label">
+                                  <input type="checkbox" checked={!!d.visited}
+                                    onChange={()=>toggleVisited(park, p.id)}
+                                    style={{ accentColor: p.color }} />
+                                  <span className="person-chip"
+                                    style={{ background: d.visited ? p.bg : "rgba(255,255,255,0.04)",
+                                             color: d.visited ? p.color : "rgba(255,255,255,0.25)",
+                                             border: `1px solid ${d.visited ? p.color+"55" : "rgba(255,255,255,0.06)"}` }}>
+                                    {p.name}
+                                  </span>
+                                </label>
+                                {d.visitTime && <span className="person-visit-time">{d.visitTime}</span>}
+                                {d.note && <span className="person-note-preview">· {d.note}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className="park-actions">
+                        <button className="note-btn" onClick={()=>openNote(park)}>
+                          {PEOPLE.some(p=>hasAnyData(park,p.id)) ? "✏ Edit" : "+ Notes"}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Note modal ── */}
+      {editingPark && (
+        <div className="overlay" onClick={()=>setEditingPark(null)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-park-name">{editingPark}</div>
+            <div className="modal-subtitle">Add visit details for each family member</div>
+            {PEOPLE.map(p => (
+              <div key={p.id} className="modal-person-section">
+                <div className="modal-person-header">
+                  <div className="modal-person-avatar" style={{ background: p.bg, color: p.color }}>{p.initial}</div>
+                  <span className="modal-person-name" style={{ color: p.color }}>{p.name}</span>
+                </div>
+                <div className="modal-visited-row">
+                  <input type="checkbox" id={`vis-${p.id}`} checked={!!editDraft[p.id]?.visited}
+                    onChange={e=>updateDraft(p.id,"visited",e.target.checked)}
+                    style={{ accentColor: p.color }} />
+                  <label htmlFor={`vis-${p.id}`} className="modal-visited-label">Visited this park</label>
+                </div>
+                <label className="modal-label">When?</label>
+                <input className="modal-input" placeholder="e.g. July 2022, Spring '25…"
+                  value={editDraft[p.id]?.visitTime||""} onChange={e=>updateDraft(p.id,"visitTime",e.target.value)} />
+                <label className="modal-label">Thoughts & memories</label>
+                <textarea className="modal-textarea" rows={3}
+                  placeholder="What stood out? Weather? Would you go back?"
+                  value={editDraft[p.id]?.note||""} onChange={e=>updateDraft(p.id,"note",e.target.value)} />
+              </div>
+            ))}
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={()=>setEditingPark(null)}>Cancel</button>
+              <button className="save-btn" onClick={saveNote}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Settings modal ── */}
+      {showSettings && (
+        <div className="overlay" onClick={()=>setShowSettings(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="settings-title">Gist Sync Setup</div>
+            <div className="settings-subtitle">Save your family's data across devices via a private GitHub Gist</div>
+
+            <div className="settings-section">
+              <div className="settings-help">
+                <strong style={{color:"#e8e0d4"}}>How to set this up:</strong><br/>
+                1. Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a><br/>
+                2. Give it a name (e.g. "WA Parks"), check <strong>gist</strong> scope only, and generate<br/>
+                3. Paste the token below — it's only stored in your browser's localStorage<br/>
+                4. Click "Create New Gist" (once) or paste an existing Gist ID
+              </div>
+
+              <label className="modal-label">GitHub Personal Access Token</label>
+              <input className="modal-input" type="password" placeholder="ghp_…"
+                value={settingsDraft.token} onChange={e=>setSettingsDraft(s=>({...s,token:e.target.value}))} />
+
+              <label className="modal-label">Gist ID</label>
+              <input className="modal-input" placeholder="e.g. a1b2c3d4e5f6…"
+                value={settingsDraft.gistId} onChange={e=>setSettingsDraft(s=>({...s,gistId:e.target.value}))} />
+
+              <button className="sync-btn" style={{fontSize:12,padding:"6px 14px",marginTop:4}}
+                onClick={handleCreateGist}>
+                ✦ Create New Gist for me
+              </button>
+            </div>
+
+            <hr className="settings-divider"/>
+
+            <div style={{marginBottom:16}}>
+              <label className="modal-label" style={{marginBottom:8}}>Danger zone</label>
+              <button className="danger-btn" onClick={()=>{
+                if(confirm("Clear ALL local park data? This cannot be undone.")) {
+                  setParkData({}); setShowSettings(false);
+                }
+              }}>Clear all local data</button>
+            </div>
+
+            <div className="modal-actions">
+              <button className="cancel-btn" onClick={()=>setShowSettings(false)}>Cancel</button>
+              <button className="save-btn" onClick={saveSettingsAndClose}>Save Settings</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
