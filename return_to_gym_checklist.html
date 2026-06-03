@@ -1,0 +1,113 @@
+
+<style>
+  .phase { margin-bottom: 1.5rem; }
+  .phase-header { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; padding: 0; }
+  .item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); margin-bottom: 6px; cursor: pointer; transition: background 0.15s; }
+  .item:hover { background: var(--color-background-secondary); }
+  .item.done { opacity: 0.5; }
+  .item.done .item-text { text-decoration: line-through; }
+  .cb { width: 18px; height: 18px; min-width: 18px; border-radius: 4px; border: 0.5px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .item.done .cb { background: var(--color-background-success); border-color: var(--color-border-success); }
+  .item-text { font-size: 15px; color: var(--color-text-primary); line-height: 1.4; }
+  .item-sub { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+  .warn { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: var(--border-radius-md); background: var(--color-background-warning); border: 0.5px solid var(--color-border-warning); margin-bottom: 1.5rem; font-size: 13px; color: var(--color-text-warning); line-height: 1.5; }
+  .progress { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+  .progress span { font-weight: 500; color: var(--color-text-primary); }
+</style>
+
+<h2 class="sr-only">Return to gym checklist for rotator cuff recovery</h2>
+
+<div style="padding: 1rem 0;">
+
+<div class="warn">
+  <i class="ti ti-alert-triangle" style="font-size:16px; margin-top:1px; flex-shrink:0;" aria-hidden="true"></i>
+  Any sharp or pinching shoulder pain = stop immediately and rest before trying again.
+</div>
+
+<p class="progress">Progress: <span id="prog">0</span> of <span id="total"></span> items complete</p>
+
+<div id="list"></div>
+</div>
+
+<script>
+const phases = [
+  {
+    label: "Before every session — resistance band warm-up",
+    items: [
+      { text: "External rotation with band", sub: "Elbow at 90°, rotate forearm outward away from body" },
+      { text: "Internal rotation with band", sub: "Elbow at 90°, rotate forearm inward across body" },
+      { text: "Band pull-aparts", sub: "Hold band at shoulder width, pull apart horizontally keeping arms straight" },
+    ]
+  },
+  {
+    label: "First few sessions — lower body & core only",
+    items: [
+      { text: "Squats or leg press" },
+      { text: "Lunges" },
+      { text: "Leg curl / leg extension" },
+      { text: "Core work that doesn't load the shoulder", sub: "Dead bugs, leg raises, pallof press" },
+      { text: "Keep it short — don't try to make up for lost time" },
+    ]
+  },
+  {
+    label: "When adding upper body — pulling first",
+    items: [
+      { text: "Rows before any pressing", sub: "Cable rows, dumbbell rows — pulling movements are safer to start" },
+      { text: "Lat pulldowns to the front", sub: "Never behind the neck" },
+      { text: "Use neutral grip where possible", sub: "Hammer curls, neutral grip press" },
+      { text: "Start at ~50% of your previous weights — genuinely" },
+    ]
+  },
+  {
+    label: "Movements to avoid for the first month",
+    items: [
+      { text: "Overhead pressing (shoulder press, military press)" },
+      { text: "Behind-the-neck anything" },
+      { text: "Upright rows" },
+      { text: "Wide-grip bench press" },
+    ]
+  },
+  {
+    label: "General rules",
+    items: [
+      { text: "Increase weight every 2 weeks max — not every session" },
+      { text: "If it feels too easy, that's the point right now" },
+      { text: "Don't let the gym buzz push you to do too much too soon" },
+    ]
+  }
+];
+
+const list = document.getElementById('list');
+const progEl = document.getElementById('prog');
+const totalEl = document.getElementById('total');
+let states = [];
+let idx = 0;
+
+phases.forEach((phase, pi) => {
+  const ph = document.createElement('div');
+  ph.className = 'phase';
+  const hdr = document.createElement('p');
+  hdr.className = 'phase-header';
+  hdr.textContent = phase.label;
+  ph.appendChild(hdr);
+
+  phase.items.forEach((item, ii) => {
+    const i = idx++;
+    states.push(false);
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.dataset.i = i;
+    row.innerHTML = `<div class="cb" id="cb${i}" aria-hidden="true"></div><div><div class="item-text">${item.text}</div>${item.sub ? `<div class="item-sub">${item.sub}</div>` : ''}</div>`;
+    row.addEventListener('click', () => {
+      states[i] = !states[i];
+      row.classList.toggle('done', states[i]);
+      document.getElementById('cb'+i).innerHTML = states[i] ? '<i class="ti ti-check" style="font-size:12px;color:var(--color-text-success)"></i>' : '';
+      progEl.textContent = states.filter(Boolean).length;
+    });
+    ph.appendChild(row);
+  });
+  list.appendChild(ph);
+});
+
+totalEl.textContent = states.length;
+</script>
