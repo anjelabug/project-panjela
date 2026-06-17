@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Your Stash · Summer 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #fef7ee;
+  --bg2:         #faefd8;
+  --card-bg:     #fffdf8;
+  --coral:       #c9503f;
+  --coral-dark:  #a83e2f;
+  --coral-light: #e8907e;
+  --coral-pale:  #fde9e5;
+  --teal:        #2a7a70;
+  --teal-dark:   #1f5e56;
+  --teal-light:  #4aab9c;
+  --teal-pale:   #dff2ef;
+  --gold:        #b8892a;
+  --gold-pale:   #fdf2d8;
+  --sand:        #dfc89a;
+  --border:      #e6cfa5;
+  --text:        #2c1810;
+  --text-mid:    #6b4535;
+  --text-muted:  #9a7860;
+  --shadow:      rgba(44,24,16,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Crimson Pro', serif;
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 1.5rem 1rem 6rem;
+}
+
+/* ── HEADER ── */
+.site-header { text-align: center; margin-bottom: 1.8rem; }
+.site-header::before { content: '☀ ✿ ☀ ✿ ☀'; display: block; font-size: 0.6rem; letter-spacing: 0.4em; color: var(--sand); margin-bottom: 0.6rem; }
+.site-title { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--coral); letter-spacing: 0.08em; }
+.site-subtitle { font-family: 'DM Mono', monospace; font-size: 0.5rem; color: var(--text-muted); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.25rem; }
+.site-links { display: flex; justify-content: center; gap: 0.7rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.site-link { font-family: 'DM Mono', monospace; font-size: 0.48rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); background: rgba(0,0,0,0.03); border: 1px solid var(--border); padding: 0.22rem 0.65rem; border-radius: 2px; text-decoration: none; transition: color 0.15s, background 0.15s; }
+.site-link:hover { color: var(--coral); background: var(--coral-pale); }
+
+/* ── PROGRESS ── */
+.progress-section { max-width: 520px; margin: 0 auto 2rem; text-align: center; }
+.progress-label { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+.progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--coral), var(--gold)); border-radius: 3px; transition: width 0.5s ease; }
+.progress-stats { font-family: 'DM Mono', monospace; font-size: 0.5rem; color: var(--text-muted); letter-spacing: 0.08em; }
+
+/* ── DRAW SECTION ── */
+.draw-section { max-width: 520px; margin: 0 auto 2rem; }
+
+/* ── EMPTY STATE ── */
+.empty-state { background: var(--card-bg); border: 2px dashed var(--border); border-radius: 8px; padding: 3rem 2rem; text-align: center; }
+.empty-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+.empty-title { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem; color: var(--text-mid); margin-bottom: 0.5rem; }
+.empty-sub { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.6rem; }
+
+/* ── DRAW BUTTON ── */
+.draw-btn { font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: var(--coral); border: none; padding: 0.8rem 2.8rem; border-radius: 4px; cursor: pointer; transition: background 0.15s, transform 0.1s; box-shadow: 0 3px 12px rgba(201,80,63,0.35); }
+.draw-btn:hover { background: var(--coral-dark); }
+.draw-btn:active { transform: scale(0.97); }
+
+/* ── ACTIVE CARD ── */
+.active-card { background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 8px; box-shadow: 0 4px 24px var(--shadow); overflow: hidden; animation: reveal 0.35s ease; }
+@keyframes reveal { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+.card-top { background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%); padding: 1.6rem 1.5rem 1.3rem; color: #fff; position: relative; }
+.card-number { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.5rem; }
+.card-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; line-height: 1.15; text-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+.card-desc { margin-top: 0.55rem; font-size: 1.05rem; font-style: italic; opacity: 0.92; line-height: 1.45; }
+
+.card-body { padding: 1.3rem 1.5rem 1.6rem; }
+.field-group { margin-bottom: 1rem; }
+.field-label { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.4rem; }
+.field-textarea { width: 100%; font-family: 'Crimson Pro', serif; font-size: 1.05rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.6rem 0.75rem; resize: vertical; min-height: 90px; line-height: 1.5; transition: border-color 0.15s; }
+.field-textarea:focus { outline: none; border-color: var(--coral-light); }
+.field-input { width: 100%; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.5rem 0.75rem; transition: border-color 0.15s; }
+.field-input:focus { outline: none; border-color: var(--teal-light); }
+.field-hint { font-family: 'DM Mono', monospace; font-size: 0.45rem; color: var(--text-muted); margin-top: 0.3rem; letter-spacing: 0.08em; }
+
+.card-actions { display: flex; gap: 0.75rem; margin-top: 1.3rem; }
+.btn-complete { flex: 1; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--teal); border: none; padding: 0.7rem 1rem; border-radius: 4px; cursor: pointer; transition: background 0.15s; }
+.btn-complete:hover { background: var(--teal-dark); }
+.btn-putback { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.06em; color: var(--text-muted); background: transparent; border: 1px solid var(--border); padding: 0.65rem 1rem; border-radius: 4px; cursor: pointer; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+.btn-putback:hover { color: var(--coral); border-color: var(--coral-light); }
+
+/* ── COMPLETED SECTION ── */
+.completed-section { max-width: 520px; margin: 0 auto 0; }
+.section-rule { border: none; border-top: 1px solid var(--border); margin: 2rem 0 1.5rem; }
+.section-heading { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); text-align: center; margin-bottom: 1.2rem; }
+.completed-grid { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; }
+
+.mini-card { width: 92px; height: 116px; background: linear-gradient(140deg, var(--coral) 0%, var(--gold) 100%); border-radius: 6px; padding: 0.6rem 0.55rem 0.5rem; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px var(--shadow); color: #fff; position: relative; overflow: hidden; }
+.mini-card::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.06); border-radius: 6px; pointer-events: none; }
+.mini-card:hover { transform: translateY(-3px) rotate(-0.5deg); box-shadow: 0 6px 18px rgba(44,24,16,0.2); }
+.mini-num { font-family: 'DM Mono', monospace; font-size: 0.42rem; letter-spacing: 0.1em; opacity: 0.65; }
+.mini-title { font-family: 'Playfair Display', serif; font-size: 0.7rem; font-weight: 700; line-height: 1.25; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; padding: 0.2rem 0; }
+.mini-footer { display: flex; justify-content: space-between; align-items: center; }
+.mini-check { font-size: 0.55rem; opacity: 0.75; }
+.mini-video-badge { font-family: 'DM Mono', monospace; font-size: 0.38rem; letter-spacing: 0.05em; background: rgba(255,255,255,0.25); padding: 0.15rem 0.3rem; border-radius: 2px; }
+
+/* ── REMAINING BROWSE ── */
+.remaining-section { max-width: 520px; margin: 1.5rem auto 0; }
+.remaining-toggle { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); text-align: center; cursor: pointer; padding: 0.5rem; user-select: none; transition: color 0.15s; }
+.remaining-toggle:hover { color: var(--coral); }
+.remaining-list { display: flex; flex-wrap: wrap; gap: 0.45rem; justify-content: center; margin-top: 0.75rem; }
+.remaining-chip { font-family: 'DM Mono', monospace; font-size: 0.48rem; letter-spacing: 0.04em; color: var(--text-mid); background: var(--bg2); border: 1px solid var(--border); border-radius: 3px; padding: 0.22rem 0.5rem; white-space: nowrap; }
+
+/* ── MODAL ── */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(44,24,16,0.45); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 1rem; animation: fade 0.18s ease; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.modal { background: var(--card-bg); border-radius: 8px; max-width: 430px; width: 100%; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.25); }
+.modal-top { background: linear-gradient(135deg, var(--coral), var(--gold)); padding: 1.2rem 1.5rem 1rem; color: #fff; }
+.modal-num { font-family: 'DM Mono', monospace; font-size: 0.48rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.35rem; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+.modal-desc { font-size: 0.9rem; font-style: italic; margin-top: 0.3rem; opacity: 0.88; line-height: 1.4; }
+.modal-body { padding: 1.1rem 1.5rem; }
+.modal-meta { font-family: 'DM Mono', monospace; font-size: 0.48rem; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.9rem; }
+.modal-section-label { font-family: 'DM Mono', monospace; font-size: 0.48rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; }
+.modal-notes-text { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--text); line-height: 1.55; white-space: pre-wrap; margin-bottom: 1rem; min-height: 1.5rem; }
+.modal-url-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
+.modal-url-input { flex: 1; font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.45rem 0.65rem; }
+.modal-url-input:focus { outline: none; border-color: var(--teal-light); }
+.modal-url-save { font-family: 'DM Mono', monospace; font-size: 0.52rem; color: white; background: var(--teal); border: none; padding: 0.45rem 0.75rem; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+.modal-url-save:hover { background: var(--teal-dark); }
+.modal-video-link { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'DM Mono', monospace; font-size: 0.55rem; color: var(--teal); text-decoration: none; border: 1px solid var(--teal-light); padding: 0.35rem 0.75rem; border-radius: 4px; margin-top: 0.6rem; transition: background 0.15s; }
+.modal-video-link:hover { background: var(--teal-pale); }
+.modal-footer { display: flex; justify-content: flex-end; padding: 0 1.5rem 1.2rem; }
+.btn-close { font-family: 'DM Mono', monospace; font-size: 0.56rem; letter-spacing: 0.06em; color: var(--text-muted); background: transparent; border: 1px solid var(--border); padding: 0.45rem 1rem; border-radius: 4px; cursor: pointer; transition: color 0.15s; }
+.btn-close:hover { color: var(--coral); border-color: var(--coral-light); }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; background: var(--text); color: #fff; padding: 0.6rem 1.2rem; border-radius: 4px; opacity: 0; transition: opacity 0.25s; pointer-events: none; z-index: 300; white-space: nowrap; }
+.toast.show { opacity: 1; }
+
+/* ── FOOTER ── */
+footer { text-align: center; margin-top: 3rem; font-family: 'DM Mono', monospace; font-size: 0.46rem; letter-spacing: 0.12em; color: var(--sand); text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-title">Shop Your Stash</div>
+  <div class="site-subtitle">Summer 2026 · Roulette Mode · #shopyourstashroulette</div>
+  <nav class="site-links">
+    <a href="https://anjelabug.github.io/project-panjela" class="site-link">← Main Page</a>
+    <a href="project-panopoly.html" class="site-link">Project Panopoly</a>
+    <a href="deckofpanning.html" class="site-link">Deck of Panning</a>
+  </nav>
+</header>
+
+<section class="progress-section">
+  <div class="progress-label" id="progress-label">0 of 63 complete</div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-stats" id="progress-stats">63 prompts remaining</div>
+</section>
+
+<section class="draw-section" id="draw-section"></section>
+
+<section class="completed-section" id="completed-section" style="display:none">
+  <hr class="section-rule">
+  <div class="section-heading">Completed · Archived</div>
+  <div class="completed-grid" id="completed-grid"></div>
+</section>
+
+<section class="remaining-section" id="remaining-section">
+  <div class="remaining-toggle" id="remaining-toggle" onclick="toggleRemaining()">▾ Browse remaining prompts</div>
+  <div class="remaining-list" id="remaining-list" style="display:none"></div>
+</section>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal-backdrop" style="display:none" onclick="handleBackdropClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-top">
+      <div class="modal-num" id="modal-num"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-section-label">Notes</div>
+      <div class="modal-notes-text" id="modal-notes-text"></div>
+      <div class="modal-section-label">YouTube Short</div>
+      <div class="modal-url-row">
+        <input type="text" class="modal-url-input" id="modal-url-input" placeholder="https://youtube.com/shorts/...">
+        <button class="modal-url-save" onclick="saveModalUrl()">Save</button>
+      </div>
+      <div id="modal-video-link-wrap"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>Shop Your Stash Summer 2026 · anjelabug.github.io/project-panjela</footer>
+
+<script>
+const KEY = 'shop-your-stash-summer-2026';
+
+const PROMPTS = [
+  { id: 1,  title: "Flawless Finish",       desc: "Mix two base products to find your perfect shade or finish" },
+  { id: 2,  title: "Trip Down Memory Lane", desc: "Use your oldest eyeshadow palette" },
+  { id: 3,  title: "Texture Refresh",       desc: "Use a cream product you haven't touched in over a month" },
+  { id: 4,  title: "Nearly There",          desc: "Focus on a product with significant pan to get closer to the finish line" },
+  { id: 5,  title: "Piña Colada",           desc: "Get inspired by a gorgeous summer sunset. Think coral, tangerine, hot pink." },
+  { id: 6,  title: "Sunset",               desc: "Gold lids + creamy nude lip" },
+  { id: 7,  title: "BBQ",                  desc: "Choose products you'd recommend to family and friends" },
+  { id: 8,  title: "Tropical",             desc: "Grab for the most tropical inspired palette you own" },
+  { id: 9,  title: "Sandy",               desc: "Full body exfoliation — don't forget your lips!" },
+  { id: 10, title: "Blue Moon",            desc: "Use that \"scary\" colorful shade in your palette as an eyeliner" },
+  { id: 11, title: "Lip Combo",            desc: "Layer a gloss over a matte lipstick you usually find too drying" },
+  { id: 12, title: "Highlight of the Day", desc: "Use an eyeshadow as your cheek highlight" },
+  { id: 13, title: "Sangria",              desc: "Products with fruity shade names OR wine colors" },
+  { id: 14, title: "She's Blushing",       desc: "Layer a cream blush with a powder blush for added longevity" },
+  { id: 15, title: "Reverse Cat-Eye",      desc: "Use a dark eyeshadow to smoke out the lower lash line" },
+  { id: 16, title: "Wave",                 desc: "Create a fun graphic liner look" },
+  { id: 17, title: "Mint Chip",            desc: "Use a green or mint shadow you rarely reach for" },
+  { id: 18, title: "Watermelon",           desc: "Create a \"watermelon glow\" look. Check Pinterest for inspo" },
+  { id: 19, title: "Tool Swap",            desc: "Apply your foundation with your fingers. Reach for some neglected brushes" },
+  { id: 20, title: "Sheer It Out",         desc: "Mix a heavy concealer with a moisturizer to create your own skin tint" },
+  { id: 21, title: "Brow Focus",           desc: "Use an eyeshadow to fill in your brows" },
+  { id: 22, title: "Mesmerizing Mermaid",  desc: "Reach for your most shifty dimensional shadow" },
+  { id: 23, title: "Set It Forget It",     desc: "Try \"baking\" using a loose powder you rarely use" },
+  { id: 24, title: "Lash Combo",           desc: "Combine two different mascaras to achieve a perfect lash look OR pop on some falsies if you own them" },
+  { id: 25, title: "Beach Bag",            desc: "Choose a tinted moisturizer, balm or SPF that you've neglected" },
+  { id: 26, title: "Bronzed",              desc: "Grab your most longwearing or waterproof products" },
+  { id: 27, title: "Pool Day",             desc: "Use your least reached for bronzer" },
+  { id: 28, title: "Itty Bitty",           desc: "Gather up those foil samples and minis cluttering up your collection" },
+  { id: 29, title: "Multi-Use Palette",    desc: "Use a palette for more than just your eyeshadow" },
+  { id: 30, title: "On The Hunt",          desc: "Have you been tempted by a new release? Let's try to \"dupe\" it with your collection" },
+  { id: 31, title: "Pop of Color",         desc: "A classic \"fun\" look. Pop something bright on the lower lash line or inner corner" },
+  { id: 32, title: "PINK",                 desc: "Use your oldest pink blush (cream or powder)" },
+  { id: 33, title: "Juicy",               desc: "Wear a juicy, glossy lip today" },
+  { id: 34, title: "Vanilla Soft Serve",   desc: "All neutrals but extra glowy!" },
+  { id: 35, title: "It's So Hot!",         desc: "Use your warmest eyeshadow palette in your stash" },
+  { id: 36, title: "In the Spotlight",     desc: "Pick a highlighter you haven't used in ages" },
+  { id: 37, title: "Copy Cat",             desc: "Mimic a look that caught your eye recently" },
+  { id: 38, title: "Skin Savior",          desc: "Time for a face mask or treatment you've been saving" },
+  { id: 39, title: "A Night to Remember",  desc: "I dare you to wear a \"night out\" look during the DAY" },
+  { id: 40, title: "Strawberry Swirl",     desc: "Soft pink monochromatic look" },
+  { id: 41, title: "Sunshine",            desc: "Wear orange, gold or terracotta somewhere in your look" },
+  { id: 42, title: "Goddess",             desc: "Grab a cream bronzer to achieve a bronzed goddess look" },
+  { id: 43, title: "Y2K",                 desc: "A squeezy tube gloss, or one you rarely wear" },
+  { id: 44, title: "Youthful",            desc: "Dewy youthful base. Use a skin tint and cream and liquid products where possible" },
+  { id: 45, title: "Berry Flush",         desc: "Pick a plum or raspberry shade that's been collecting dust" },
+  { id: 46, title: "Freckles",            desc: "Summer trend: Try out some faux freckles" },
+  { id: 47, title: "Beauty on a Budget",  desc: "Create a full look using your most affordable items" },
+  { id: 48, title: "2016 is Calling",     desc: "2016 makeup is making a comeback — do a full beat" },
+  { id: 49, title: "Sweet Peach",         desc: "Monochromatic peach look" },
+  { id: 50, title: "Lip Lab",             desc: "Layer 3 neglected lip products to create a custom shade" },
+  { id: 51, title: "Cool Breeze",         desc: "Rock a cool-toned look today" },
+  { id: 52, title: "Pool Water",          desc: "Use the bluest shades you own OR makeup that cheers you up" },
+  { id: 53, title: "Margarita",           desc: "Lime shimmer + salty highlight" },
+  { id: 54, title: "Forgotten Fragrance", desc: "Wear a perfume you usually save for \"special occasions\"" },
+  { id: 55, title: "Matte Magic",         desc: "Create an entire look using only matte textures" },
+  { id: 56, title: "Rose Spritz",         desc: "Soft rosy tones — don't forget the sparkle!" },
+  { id: 57, title: "Popsicle",            desc: "Trend alert: Recreate the popsicle lip look" },
+  { id: 58, title: "Blind Date",          desc: "Pick out 5 products from your collection blindfolded" },
+  { id: 59, title: "Productive Queen",    desc: "Use one product in at least three different ways" },
+  { id: 60, title: "Progress",            desc: "Full face of project pan items" },
+  { id: 61, title: "High-End Hero",       desc: "Enjoy using your most expensive product" },
+  { id: 62, title: "Post-Vacay Glow",     desc: "Apply a body luminizer or liquid highlight to get that vacation glow" },
+  { id: 63, title: "Viral Routine",       desc: "Who's makeup routine is going viral? Let's try it out!" },
+];
+
+// ── STATE ──
+// { active: id|null, draft: { notes, videoUrl }, cards: { "id": { notes, videoUrl, completedDate } } }
+function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
+function persist(st) { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} }
+
+function getState() {
+  const d = load();
+  return {
+    active: d.active || null,
+    draft:  d.draft  || { notes: '', videoUrl: '' },
+    cards:  d.cards  || {}
+  };
+}
+
+function getPrompt(id) { return PROMPTS.find(p => p.id === id); }
+function completedIds(st) { return Object.keys(st.cards).map(Number); }
+function remainingPrompts(st) {
+  const done = completedIds(st);
+  return PROMPTS.filter(p => !done.includes(p.id) && p.id !== st.active);
+}
+function today() {
+  const n = new Date();
+  return `${n.getMonth()+1}/${n.getDate()}/${n.getFullYear()}`;
+}
+
+// ── AUTO-SAVE DRAFT ──
+let draftTimer = null;
+function scheduleDraftSave() {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => {
+    const st = getState();
+    if (!st.active) return;
+    st.draft.notes    = document.getElementById('notes-input')?.value  || '';
+    st.draft.videoUrl = document.getElementById('video-input')?.value  || '';
+    persist(st);
+  }, 400);
+}
+
+// ── ACTIONS ──
+function drawCard() {
+  const st = getState();
+  const pool = remainingPrompts(st);
+  if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  st.active = pick.id;
+  st.draft  = { notes: '', videoUrl: '' };
+  persist(st);
+  render();
+}
+
+function putBack() {
+  const st = getState();
+  st.active = null;
+  st.draft  = { notes: '', videoUrl: '' };
+  persist(st);
+  render();
+}
+
+function completeCard() {
+  const st = getState();
+  if (!st.active) return;
+  const notes    = document.getElementById('notes-input')?.value.trim() || '';
+  const videoUrl = document.getElementById('video-input')?.value.trim() || '';
+  st.cards[st.active] = { notes, videoUrl, completedDate: today() };
+  st.active = null;
+  st.draft  = { notes: '', videoUrl: '' };
+  persist(st);
+  render();
+  toast('Prompt archived! ✦');
+}
+
+// ── RENDER ──
+function render() {
+  const st = getState();
+  const done = completedIds(st);
+  const remaining = remainingPrompts(st);
+  const total = 63;
+  const doneCount = done.length;
+  const pct = Math.round(doneCount / total * 100);
+
+  // Progress
+  document.getElementById('progress-label').textContent = `${doneCount} of ${total} complete`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  const inPool = remaining.length + (st.active ? 1 : 0);
+  document.getElementById('progress-stats').textContent =
+    inPool === 0 ? '✦ All 63 prompts complete! ✦' :
+    st.active    ? `${inPool} remaining · 1 in progress` :
+                   `${inPool} remaining`;
+
+  // Draw section
+  const drawEl = document.getElementById('draw-section');
+  if (st.active) {
+    const p = getPrompt(st.active);
+    drawEl.innerHTML = `
+      <div class="active-card">
+        <div class="card-top">
+          <div class="card-number">Prompt #${p.id} of 63</div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-desc">${p.desc}</div>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label" for="notes-input">Notes</label>
+            <textarea class="field-textarea" id="notes-input" placeholder="How did you fulfill this prompt? What products did you use? How did the look turn out?" oninput="scheduleDraftSave()">${escHtml(st.draft.notes)}</textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="video-input">YouTube Short URL</label>
+            <input type="text" class="field-input" id="video-input" placeholder="https://youtube.com/shorts/..." value="${escHtml(st.draft.videoUrl)}" oninput="scheduleDraftSave()">
+            <div class="field-hint">Add after uploading to the project-panjela channel · #shopyourstashroulette</div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-putback" onclick="putBack()">Put Back</button>
+            <button class="btn-complete" onclick="completeCard()">✦ Complete &amp; Archive</button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (inPool === 0) {
+    drawEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">☀</div>
+        <div class="empty-title">All 63 prompts complete!</div>
+        <div class="empty-sub">You shopped your stash all summer long</div>
+      </div>
+    `;
+  } else {
+    drawEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✿</div>
+        <div class="empty-title">Ready to shop your stash?</div>
+        <div class="empty-sub">${remaining.length} prompt${remaining.length !== 1 ? 's' : ''} remaining in the pool</div>
+        <button class="draw-btn" onclick="drawCard()">✦ Draw a Prompt ✦</button>
+      </div>
+    `;
+  }
+
+  // Completed grid
+  const compSection = document.getElementById('completed-section');
+  const grid = document.getElementById('completed-grid');
+  if (doneCount > 0) {
+    compSection.style.display = '';
+    const sorted = [...done].sort((a, b) => {
+      // Sort most-recently-completed first
+      const da = st.cards[a]?.completedDate || '';
+      const db = st.cards[b]?.completedDate || '';
+      return db < da ? -1 : db > da ? 1 : b - a;
+    });
+    grid.innerHTML = sorted.map(id => {
+      const p = getPrompt(id);
+      const card = st.cards[id] || {};
+      return `<div class="mini-card" onclick="openModal(${id})" title="#${p.id} · ${p.title}">
+        <div class="mini-num">#${p.id}</div>
+        <div class="mini-title">${p.title}</div>
+        <div class="mini-footer">
+          <span class="mini-check">✦</span>
+          ${card.videoUrl ? '<span class="mini-video-badge">▶ Short</span>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    compSection.style.display = 'none';
+  }
+
+  // Remaining browse
+  const remList = document.getElementById('remaining-list');
+  remList.innerHTML = remaining.map(p =>
+    `<div class="remaining-chip" title="${p.desc}">#${p.id} ${p.title}</div>`
+  ).join('');
+
+  // Hide remaining toggle if nothing remaining
+  document.getElementById('remaining-section').style.display =
+    remaining.length > 0 ? '' : 'none';
+}
+
+// ── MODAL ──
+let activeModalId = null;
+
+function openModal(id) {
+  activeModalId = id;
+  const st = getState();
+  const p = getPrompt(id);
+  const card = st.cards[id] || {};
+  document.getElementById('modal-num').textContent    = `Prompt #${p.id} of 63`;
+  document.getElementById('modal-title').textContent  = p.title;
+  document.getElementById('modal-desc').textContent   = p.desc;
+  document.getElementById('modal-meta').textContent   = `Completed ${card.completedDate || ''}`;
+  document.getElementById('modal-notes-text').textContent = card.notes || '(No notes added)';
+  document.getElementById('modal-url-input').value    = card.videoUrl || '';
+  refreshModalLink(card.videoUrl);
+  document.getElementById('modal-backdrop').style.display = 'flex';
+}
+
+function refreshModalLink(url) {
+  const wrap = document.getElementById('modal-video-link-wrap');
+  wrap.innerHTML = url
+    ? `<a class="modal-video-link" href="${escHtml(url)}" target="_blank" rel="noopener">▶ Watch on YouTube ↗</a>`
+    : '';
+}
+
+function saveModalUrl() {
+  if (!activeModalId) return;
+  const url = document.getElementById('modal-url-input').value.trim();
+  const st = getState();
+  if (!st.cards[activeModalId]) st.cards[activeModalId] = {};
+  st.cards[activeModalId].videoUrl = url;
+  persist(st);
+  refreshModalLink(url);
+  render();
+  toast('URL saved ✦');
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').style.display = 'none';
+  activeModalId = null;
+}
+function handleBackdropClick(e) {
+  if (e.target.id === 'modal-backdrop') closeModal();
+}
+
+// ── REMAINING TOGGLE ──
+let remainingOpen = false;
+function toggleRemaining() {
+  remainingOpen = !remainingOpen;
+  document.getElementById('remaining-list').style.display = remainingOpen ? 'flex' : 'none';
+  document.getElementById('remaining-toggle').textContent =
+    remainingOpen ? '▴ Hide remaining prompts' : '▾ Browse remaining prompts';
+}
+
+// ── TOAST ──
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── UTIL ──
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>
