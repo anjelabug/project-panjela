@@ -273,56 +273,7 @@ body {
 
 <!-- 8♠ CHOPPING BLOCK — completed 6/10/2026, moved to collected -->
 
-<!-- ══ 9♦ WILDCARD ══ -->
-<div class="challenge red-card" id="c-wildcard2">
-  <div class="card-header" onclick="toggleCard('wildcard2')">
-    <div class="pip-col">
-      <div class="pip-corner tl"><span>9</span><span>♦</span></div>
-      <div class="pip-main">♦</div>
-      <div class="pip-corner br"><span>9</span><span>♦</span></div>
-    </div>
-    <div class="card-info">
-      <div class="challenge-type">9 of Diamonds</div>
-      <div class="challenge-name">Wildcard</div>
-      <div class="product-name">Biodance · Cera-Nol Gel Toner Pads · Pan to Empty</div>
-      <div class="complete-stamp">✦ Complete ✦</div>
-      <div class="header-progress">
-        <div class="mini-bar-wrap"><div class="mini-bar red-bar" id="bar-wildcard2"></div></div>
-        <div class="mini-count" id="count-wildcard2">0 uses · Full</div>
-      </div>
-    </div>
-    <div class="chevron">▾</div>
-  </div>
-  <div class="card-body">
-    <div class="body-section"><div class="section-title">Challenge</div><div class="challenge-desc">Wildcard — your choice! Anything goes.</div><div class="challenge-detail">Pan to empty · Skincare edition. Biodance Cera-Nol pads are on their way out of the routine — finish the container.</div></div>
-    <div class="body-section"><div class="section-title">Product</div><div class="detail-grid"><div class="detail-label">Brand</div><div class="detail-value">Biodance</div><div class="detail-label">Product</div><div class="detail-value">Cera-Nol Real Cica Soothing Gel Toner Pads</div><div class="detail-label">Goal</div><div class="detail-value">Pan to empty</div><div class="detail-label">Started</div><div class="detail-value">6/10/2026</div></div></div>
-    <div class="body-section">
-      <div class="section-title">Progress · Pan to Empty</div>
-      <div class="counter-wrap">
-        <button class="counter-btn minus" onclick="adjustCount('wildcard2',-1)">−</button>
-        <div class="counter-display"><div class="counter-number" id="num-wildcard2">0</div><div class="counter-target">uses logged</div></div>
-        <button class="counter-btn plus" onclick="adjustCount('wildcard2',1)">+</button>
-      </div>
-      <div style="margin-top:0.8rem;">
-        <label style="font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Pan Level</label>
-        <select id="pan-wildcard2" onchange="setPanLevel('wildcard2')" style="font-family:'Crimson Pro',serif;font-size:0.95rem;padding:0.3rem 0.5rem;border:1px solid var(--card-border);border-radius:3px;width:100%;background:var(--card-white);">
-          <option value="full">Full</option>
-          <option value="75">~75% remaining</option>
-          <option value="50">Halfway!</option>
-          <option value="25">~25% remaining</option>
-          <option value="nearly">Nearly gone!</option>
-          <option value="panned">🫙 Panned!</option>
-        </select>
-      </div>
-      <div class="progress-wrap" style="margin-top:0.6rem;">
-        <div class="progress-label-row"><span id="pct-wildcard2">Full</span><span id="last-wildcard2" class="last-used"></span></div>
-        <div class="progress-track"><div class="progress-fill red-bar" id="fill-wildcard2" style="width:0%"></div></div>
-      </div>
-    </div>
-    <div class="body-section"><div class="section-title">Notes Log</div><div class="notes-log" id="log-wildcard2"><div class="note-empty">No notes yet.</div></div><div class="notes-input-wrap"><textarea class="notes-input" id="input-wildcard2" placeholder="Add a note…" rows="2"></textarea><button class="note-submit red-submit" onclick="addNote('wildcard2')">Add</button></div></div>
-    <div class="complete-overlay"><div class="complete-message">✦ Challenge Complete! ✦</div><div class="complete-sub">Biodance Cera-Nol pads — panned! Draw again!</div></div>
-  </div>
-</div>
+<!-- 9♦ WILDCARD — panned 7/9/2026, moved to collected -->
 
 <!-- 3♣ HIT A PAN — panned 6/22/2026, moved to collected -->
 
@@ -413,6 +364,35 @@ body {
   </div>
 </div>
 
+<!-- ══ A♠ PLAN TO PAN ══ -->
+<div class="challenge black-card" id="c-plantopan">
+  <div class="card-header" onclick="toggleCard('plantopan')">
+    <div class="pip-col">
+      <div class="pip-corner tl"><span>A</span><span>♠</span></div>
+      <div class="pip-main">♠</div>
+      <div class="pip-corner br"><span>A</span><span>♠</span></div>
+    </div>
+    <div class="card-info">
+      <div class="challenge-type">Ace of Spades</div>
+      <div class="challenge-name">Plan To Pan</div>
+      <div class="product-name">Laneige · JuicePop Box Lip Tint · Electro Berry</div>
+      <div class="complete-stamp">✦ Complete ✦</div>
+      <div class="header-progress">
+        <div class="mini-bar-wrap"><div class="mini-bar black-bar" id="bar-plantopan"></div></div>
+        <div class="mini-count" id="count-plantopan">0 / 15</div>
+      </div>
+    </div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="body-section"><div class="section-title">Challenge</div><div class="challenge-desc">Plan To Pan — a product you're planning to work through to the end.</div><div class="challenge-detail">15 uses · Laneige JuicePop Lip Tint in Electro Berry — use it consistently and evaluate whether it earns its place in the collection.</div></div>
+    <div class="body-section"><div class="section-title">Product</div><div class="detail-grid"><div class="detail-label">Brand</div><div class="detail-value">Laneige</div><div class="detail-label">Product</div><div class="detail-value">JuicePop Box Lip Tint</div><div class="detail-label">Shade</div><div class="detail-value">Electro Berry</div><div class="detail-label">Started</div><div class="detail-value">7/9/2026</div></div></div>
+    <div class="body-section"><div class="section-title">Uses · Target 15</div><div class="counter-wrap"><button class="counter-btn minus" onclick="adjustCount('plantopan',-1)">−</button><div class="counter-display"><div class="counter-number" id="num-plantopan">0</div><div class="counter-target">of 15 uses</div></div><button class="counter-btn plus" onclick="adjustCount('plantopan',1)">+</button></div><div class="progress-wrap"><div class="progress-label-row"><span id="pct-plantopan">0%</span><span id="last-plantopan" class="last-used"></span></div><div class="progress-track"><div class="progress-fill black-bar" id="fill-plantopan" style="width:0%"></div></div></div></div>
+    <div class="body-section"><div class="section-title">Notes Log</div><div class="notes-log" id="log-plantopan"><div class="note-empty">No notes yet.</div></div><div class="notes-input-wrap"><textarea class="notes-input" id="input-plantopan" placeholder="Add a note…" rows="2"></textarea><button class="note-submit" onclick="addNote('plantopan')">Add</button></div></div>
+    <div class="complete-overlay"><div class="complete-message">✦ Challenge Complete! ✦</div><div class="complete-sub">15 uses of Laneige Electro Berry — plan to pan, plan accomplished! Draw again!</div></div>
+  </div>
+</div>
+
 <!-- ══ COLLECTED ══ -->
 <div class="collected-section">
   <div class="collected-caption" onclick="toggleCollected()" style="cursor:pointer;user-select:none;">Cards Collected · Challenges Completed <span id="collected-chevron">▾</span></div>
@@ -458,6 +438,14 @@ body {
       <div class="cc-challenge">Precious</div>
       <div class="cc-product">MbM Ethereal Eyes</div>
       <div class="cc-corner br"><span>5</span><span>♦</span></div>
+    </div>
+
+    <div class="collected-card red-cc" onclick="openModal({pip:'♦',cardLabel:'9 of Diamonds',title:'Wildcard · Panned!',product:'Biodance · Cera-Nol Real Cica Soothing Gel Toner Pads',notes:'Fully panned.',date:'7/9/2026',badge:'complete'})">
+      <div class="cc-corner tl"><span>9</span><span>♦</span></div>
+      <div class="cc-pip">♦</div>
+      <div class="cc-challenge">Wildcard</div>
+      <div class="cc-product">Biodance Cera-Nol</div>
+      <div class="cc-corner br"><span>9</span><span>♦</span></div>
     </div>
 
     <div class="collected-card red-cc" onclick="openModal({pip:'♦',cardLabel:'10 of Diamonds',title:'Wildcard · 15 uses',product:'Milk Makeup Hydro Grip Gel Tint · Shade 2',notes:'Favorite everyday base, great medium coverage.',date:'6/2/2026',badge:'complete'})">
@@ -605,10 +593,10 @@ body {
 <script>
 const CARDS = {
   brand:     { target: 20, isPan: false },
-  wildcard2: { isPan: true },
   seasonal:  { target: 30, isPan: false },
   mrsrn:     { target: 20, isPan: false },
   mrsrn2:    { target: 20, isPan: false },
+  plantopan: { target: 15, isPan: false },
 };
 const PAN_PCT    = { full:0, '75':25, '50':50, '25':75, nearly:90, panned:100 };
 const PAN_LABELS = { full:'Full', '75':'~75% remaining', '50':'Halfway!', '25':'~25% remaining', nearly:'Nearly gone!', panned:'🫙 Panned!' };
@@ -621,11 +609,11 @@ function seedHistoricalData() {
   const d = loadData();
   if (Object.keys(d).length === 0) {
     saveData({
-      brand:     { count:0,  lastUsed:null,         notes:[], panLevel:'full' },
-      wildcard2: { count:0,  lastUsed:null,         notes:[], panLevel:'full' },
-      seasonal:  { count:0,  lastUsed:null,         notes:[], panLevel:'full' },
-      mrsrn:     { count:0,  lastUsed:null,         notes:[], panLevel:'full' },
-      mrsrn2:    { count:0,  lastUsed:null,         notes:[], panLevel:'full' },
+      brand:     { count:0,  lastUsed:null,  notes:[], panLevel:'full' },
+      seasonal:  { count:0,  lastUsed:null,  notes:[], panLevel:'full' },
+      mrsrn:     { count:0,  lastUsed:null,  notes:[], panLevel:'full' },
+      mrsrn2:    { count:0,  lastUsed:null,  notes:[], panLevel:'full' },
+      plantopan: { count:0,  lastUsed:null,  notes:[], panLevel:'full' },
     });
   }
 }

@@ -529,62 +529,7 @@ body {
   </div>
 </div>
 
-<div class="property-card" id="card-skincare">
-  <div class="deed-color-bar bar-purple" onclick="toggleCard('skincare')">
-    <div><div class="group-label">Wheel 1 · Skincare</div><div class="property-name">🏠 Purple House · In Progress</div></div>
-    <div class="chevron">▾</div>
-  </div>
-  <div class="deed-header">
-    <div class="deed-title">Skincare</div>
-    <div class="deed-subtitle">Prequel Skin · Gleanser · Travel Size</div>
-    <div class="deed-buildings" id="buildings-skincare"></div>
-    <div class="deed-progress-wrap">
-      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-skincare" style="background:var(--purple);width:0%"></div></div>
-      <div class="deed-progress-count" id="count-skincare">0 / 5</div>
-    </div>
-  </div>
-  <div class="deed-body">
-    <div class="deed-section">
-      <div class="deed-section-label">Challenge</div>
-      <div class="deed-description">Skincare — use a skincare product and evaluate it.</div>
-      <div class="deed-detail">Wheel 1 · 5 uses · North 2 / Roll The Dice. Completing this challenge earns a 🏠 purple house.</div>
-    </div>
-    <div class="deed-section">
-      <div class="deed-section-label">Product Details</div>
-      <div class="deed-grid">
-        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Prequel Skin</div>
-        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Gleanser</div>
-        <div class="deed-grid-label">Size</div><div class="deed-grid-value">Travel Size</div>
-        <div class="deed-grid-label">Started</div><div class="deed-grid-value">6/23/2026</div>
-      </div>
-    </div>
-    <div class="deed-section">
-      <div class="deed-section-label">Uses · Target 5</div>
-      <div class="deed-counter-wrap">
-        <button class="deed-btn" onclick="adjustCount('skincare',-1)">−</button>
-        <div class="deed-counter-display"><div class="deed-counter-number" id="num-skincare">0</div><div class="deed-counter-target">of 5 uses</div></div>
-        <button class="deed-btn" onclick="adjustCount('skincare',1)">+</button>
-      </div>
-      <div class="deed-last-used" id="last-skincare"></div>
-      <div class="deed-full-progress">
-        <div class="deed-full-track"><div class="deed-full-fill" id="fill-skincare" style="background:var(--purple);width:0%"></div></div>
-        <div class="deed-full-labels"><span id="pct-skincare">0%</span><span>5 uses</span></div>
-      </div>
-    </div>
-    <div class="deed-section">
-      <div class="deed-section-label">Notes Log</div>
-      <div class="deed-notes-log" id="log-skincare"><div class="deed-note-empty">No notes yet.</div></div>
-      <div class="deed-note-row">
-        <textarea class="deed-note-input" id="input-skincare" placeholder="Add a note…" rows="2"></textarea>
-        <button class="deed-note-submit" onclick="addNote('skincare')">Add</button>
-      </div>
-    </div>
-    <div class="deed-complete">
-      <div class="deed-complete-msg">✦ Purple House Earned! ✦</div>
-      <div class="deed-complete-sub">Prequel Gleanser completes — add it to the purple house tracker!</div>
-    </div>
-  </div>
-</div>
+<!-- Skincare (Prequel Gleanser) completed 7/9/2026 — Purple House earned, placed on Gleam & Glow — moved to collected section -->
 
 <!-- ══ 🌸 MAGENTA · Wheel 2 · The Vivid Collection / Lumie / Face Forward ══ -->
 <!-- Blush (Spirited) completed 6/12/2026 — moved to collected section -->
@@ -661,7 +606,7 @@ body {
 <div class="color-group-header">
   <div class="color-group-swatch" style="background:var(--green)"></div>
   <div class="color-group-name">🌿 Beauty By Tay · Earthlight · Serenity · Wheel 4</div>
-  <div class="color-group-status">2 collected when complete</div>
+  <div class="color-group-status">Full set/First house when complete</div>
 </div>
 
 <div class="property-card" id="card-minveil">
@@ -728,6 +673,63 @@ body {
     <div class="deed-complete">
       <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
       <div class="deed-complete-sub">You're now the proud owner of BareMinerals Mineral Veil from Earthlight! Roll again to find out what you'll collect next!</div>
+    </div>
+  </div>
+</div>
+
+<div class="property-card" id="card-blushveil">
+  <div class="deed-color-bar bar-green" onclick="toggleCard('blushveil')">
+    <div><div class="group-label">Wheel 4 · Blush</div><div class="property-name">Serenity</div></div>
+    <div class="chevron">▾</div>
+  </div>
+  <div class="deed-header">
+    <div class="deed-title">Blush</div>
+    <div class="deed-subtitle">Makeup By Mario · Soft Pop Plumping Blush Veil · Perfect Pink</div>
+    <div class="deed-buildings" id="buildings-blushveil"></div>
+    <div class="deed-progress-wrap">
+      <div class="deed-progress-track"><div class="deed-progress-fill" id="bar-blushveil" style="background:var(--green);width:0%"></div></div>
+      <div class="deed-progress-count" id="count-blushveil">0 / 9</div>
+    </div>
+  </div>
+  <div class="deed-body">
+    <div class="deed-section">
+      <div class="deed-section-label">Challenge</div>
+      <div class="deed-description">Blush — use and evaluate a blush product across 9 wears.</div>
+      <div class="deed-detail">Wheel 4 · 9 uses · North 6 / Roll The Dice. Full set/First house when complete.</div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Product Details</div>
+      <div class="deed-grid">
+        <div class="deed-grid-label">Brand</div><div class="deed-grid-value">Makeup By Mario</div>
+        <div class="deed-grid-label">Product</div><div class="deed-grid-value">Soft Pop Plumping Blush Veil</div>
+        <div class="deed-grid-label">Shade</div><div class="deed-grid-value">Perfect Pink</div>
+        <div class="deed-grid-label">Started</div><div class="deed-grid-value">7/9/2026</div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Uses · Target 9</div>
+      <div class="deed-counter-wrap">
+        <button class="deed-btn" onclick="adjustCount('blushveil',-1)">−</button>
+        <div class="deed-counter-display"><div class="deed-counter-number" id="num-blushveil">0</div><div class="deed-counter-target">of 9 uses</div></div>
+        <button class="deed-btn" onclick="adjustCount('blushveil',1)">+</button>
+      </div>
+      <div class="deed-last-used" id="last-blushveil"></div>
+      <div class="deed-full-progress">
+        <div class="deed-full-track"><div class="deed-full-fill" id="fill-blushveil" style="background:var(--green);width:0%"></div></div>
+        <div class="deed-full-labels"><span id="pct-blushveil">0%</span><span>9 uses</span></div>
+      </div>
+    </div>
+    <div class="deed-section">
+      <div class="deed-section-label">Notes Log</div>
+      <div class="deed-notes-log" id="log-blushveil"><div class="deed-note-empty">No notes yet.</div></div>
+      <div class="deed-note-row">
+        <textarea class="deed-note-input" id="input-blushveil" placeholder="Add a note…" rows="2"></textarea>
+        <button class="deed-note-submit" onclick="addNote('blushveil')">Add</button>
+      </div>
+    </div>
+    <div class="deed-complete">
+      <div class="deed-complete-msg">✦ Challenge Complete! ✦</div>
+      <div class="deed-complete-sub">MbM Soft Pop Blush Veil completes Serenity — full Wheel 4 set earned! Roll again!</div>
     </div>
   </div>
 </div>
@@ -806,6 +808,17 @@ body {
   <div class="collected-table">
 
     <!-- SOLO PROPERTIES (incomplete color groups) — displayed above complete monopoly boxes -->
+
+    <!-- W1 · Purple house challenges -->
+    <div class="collected-card" onclick="openModal({bar:'var(--purple)',brand:'Wheel 1 · Purple',title:'Skincare · 5 uses',product:'Prequel Skin · Gleanser · Travel Size',notes:'First purple house earned — placed on Gleam &amp; Glow.',date:'7/9/2026'})">
+      <div class="cc-color-bar" style="background:var(--purple)"></div>
+      <div class="cc-body">
+        <div class="cc-challenge">Skincare · 5</div>
+        <div class="cc-product">Prequel Gleanser</div>
+        <div class="cc-brand">Purple House 🪻</div>
+        <div class="cc-stamp">✦</div>
+      </div>
+    </div>
 
     <!-- W2 · Magenta solos -->
     <div class="collected-card" onclick="openModal({bar:'var(--magenta)',brand:'The Vivid Collection · Magenta',title:'Blush · 20 uses',product:'Rare Beauty · Soft Pinch Liquid Blush · Spirited',notes:'Gorgeous cool-toned violet liquid blush. Soft goth anchor. Confirmed keeper.',date:'6/12/2026'})">
@@ -1206,7 +1219,7 @@ body {
 </footer>
 
 <script>
-const TARGETS = { nailoil:100, oldest:20, brow:20, skincare:5 };
+const TARGETS = { nailoil:100, oldest:20, brow:20, blushveil:9 };
 const PAN_PCT_P = { full:0, '75':25, '50':50, '25':75, nearly:90, panned:100 };
 const PAN_LBL_P = { full:'Full', '75':'~75% remaining', '50':'Halfway!', '25':'~25% remaining', nearly:'Nearly gone!', panned:'🫙 Panned!' };
 const KEY = 'project-panopoly-r2';
@@ -1218,12 +1231,13 @@ function seedHistoricalData() {
   const d = load();
   if (Object.keys(d).length === 0) {
     save({
-      bronzer:  { count: 2,  lastUsed: '6/2/2026',   notes: [] },
-      blush:    { count: 14, lastUsed: '6/2/2026',   notes: [] },
-      nailoil:  { count: 5,  lastUsed: '6/14/2026',  notes: [] },
-      oldest:   { count: 4,  lastUsed: '6/14/2026',  notes: [] },
-      brow:     { count: 1,  lastUsed: '6/14/2026',  notes: [] },
-      skincare: { count: 0,  lastUsed: null,          notes: [] },
+      bronzer:   { count: 2,  lastUsed: '6/2/2026',   notes: [] },
+      blush:     { count: 14, lastUsed: '6/2/2026',   notes: [] },
+      nailoil:   { count: 5,  lastUsed: '6/14/2026',  notes: [] },
+      oldest:    { count: 7,  lastUsed: '7/9/2026',   notes: [] },
+      brow:      { count: 17, lastUsed: '7/9/2026',   notes: [] },
+      minveil:   { count: 1,  lastUsed: '7/9/2026',   notes: [], panLevel: 'full' },
+      blushveil: { count: 0,  lastUsed: null,          notes: [] },
     });
   }
 }
