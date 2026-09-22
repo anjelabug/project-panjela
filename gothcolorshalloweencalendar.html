@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spooky house advent calendar colorways</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#2B2731;--panel:#35303C;--line:#4A4452;--text:#E6E0D6;--muted:#A9A1B0;--focus:#C9B27A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.6}
+main{max-width:980px;margin:0 auto;padding:2.5rem 1.25rem 3rem}
+h1{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin:0 0 .4rem}
+.intro{color:var(--muted);max-width:60ch;margin:0 0 2rem}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2rem;align-items:start}
+@media (max-width:760px){.layout{grid-template-columns:1fr}}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1rem}
+.stage svg{display:block;width:100%;height:auto}
+h2{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:1.35rem;margin:0 0 .75rem}
+.presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:1.75rem}
+button{font:inherit;font-size:.95rem;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:8px;padding:.55rem .75rem;cursor:pointer;text-align:left}
+button:hover{border-color:var(--muted)}
+button[aria-pressed="true"]{border-color:var(--focus);background:#3E3746}
+.parts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+.pick{display:flex;align-items:center;gap:8px}
+.chip{width:18px;height:18px;border-radius:4px;border:1px solid rgba(255,255,255,.25);flex:none}
+select{font:inherit;font-size:.9rem;width:100%;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.4rem .5rem}
+button:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.note{font-size:.85rem;color:var(--muted);margin-top:1.5rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Spooky house, in gothic colors</h1>
+<p class="intro">Colorway ideas for the Halloween spooky house advent calendar, using filaments on hand. Pick a preset, then swap any part to try your own combination.</p>
+<div class="layout">
+<div class="stage"><svg id="house" viewBox="0 0 340 318" role="img" aria-label="Advent calendar house mockup in the selected colors"></svg></div>
+<div>
+<h2>Presets</h2>
+<div class="presets" id="presets"></div>
+<h2>Parts</h2>
+<div class="parts" id="parts"></div>
+</div>
+</div>
+<p class="note">Colors are approximated from the filament hex codes. Marble and metallic finishes are shown flat.</p>
+</main>
+<script>
+const P={
+chestnut:["Roasted Chestnut Black","#252321"],coffee:["Coffee Brown","#4E3121"],cocoa:["Cocoa Brown","#6F5034"],midnight:["Midnight Black","#1E2238"],
+pumpkin:["Pumpkin Orange","#FF9016"],sunny:["Sunny Orange","#E65E0F"],indigo:["Indigo Purple","#482960"],lavender:["Lavender Purple","#6B4FBB"],
+grey:["Grey 250","#636767"],ash:["Ash Gray","#9B9EA0"],bluegray:["Blue Gray","#5B6579"],mblack:["Matte Black","#161616"],
+ashen:["Ashen Concrete marble","#8F8F8F"],storm:["Shadow Storm marble","#C9C9C9"],absblack:["Absolute Black","#0E0E0E"],
+maroon:["Maroon Red","#9D2235"],bone:["Bone White","#CBC6B8"],silver:["Silver","#B9BDC3"],gold:["Iridium Gold","#A08850"]};
+const PARTS=[["frame","Frame and trim"],["roof","Roof"],["a","Drawers A"],["b","Drawers B"],["c","Drawers C"],["accent","Dormers and 28/29"],["stone","Stone gate"],["door","Door 30/31"],["metal","Knobs and numbers"],["flame","Torch flames"]];
+const PRE={
+"Mourning velvet":{frame:"absblack",roof:"indigo",a:"indigo",b:"midnight",c:"bluegray",accent:"maroon",stone:"grey",door:"maroon",metal:"silver",flame:"gold"},
+"Old blood":{frame:"chestnut",roof:"maroon",a:"maroon",b:"coffee",c:"cocoa",accent:"indigo",stone:"ashen",door:"coffee",metal:"gold",flame:"sunny"},
+"Ashen crypt":{frame:"mblack",roof:"grey",a:"grey",b:"ash",c:"bluegray",accent:"indigo",stone:"ashen",door:"cocoa",metal:"silver",flame:"gold"},
+"Tarnished manor":{frame:"midnight",roof:"bluegray",a:"indigo",b:"bluegray",c:"grey",accent:"cocoa",stone:"ashen",door:"maroon",metal:"gold",flame:"gold"},
+"Bone yard":{frame:"chestnut",roof:"cocoa",a:"ash",b:"bone",c:"storm",accent:"maroon",stone:"ashen",door:"coffee",metal:"chestnut",flame:"gold"},
+"Candlelit ossuary":{frame:"absblack",roof:"maroon",a:"indigo",b:"maroon",c:"midnight",accent:"bone",stone:"grey",door:"coffee",metal:"bone",flame:"gold"}};
+let S={...PRE["Mourning velvet"]},active="Mourning velvet";
+const C=k=>P[S[k]][1];
+const D=[[0,0,2,"a"],[1,0,24,"b"],[2,0,16,"c"],[4,0,14,"c"],[5,0,23,"b"],[6,0,1,"a"],[0,1,13,"c"],[1,1,8,"a"],[2,1,20,"b"],[4,1,21,"b"],[5,1,4,"a"],[6,1,11,"c"],
+[0,2,5,"a"],[1,2,10,"c"],[5,2,9,"c"],[6,2,17,"b"],[0,3,12,"c"],[1,3,19,"b"],[5,3,3,"a"],[6,3,15,"c"],[0,4,22,"b"],[1,4,7,"a"],[5,4,18,"b"],[6,4,6,"a"]];
+const W=40,H=36,X=30,Y=122;
+function knob(x,y,n,ny){return `<circle cx="${x}" cy="${y}" r="3.5" fill="${C('metal')}"/><text x="${x}" y="${ny}" text-anchor="middle" fill="${C('metal')}" font-size="11" font-weight="600" font-family="Source Sans 3,system-ui,sans-serif">${n}</text>`}
+function dormer(cx,y,n){return `<polygon points="${cx-22},${y+44} ${cx-22},${y+14} ${cx},${y-6} ${cx+22},${y+14} ${cx+22},${y+44}" fill="${C('frame')}"/><polygon points="${cx-17},${y+40} ${cx-17},${y+14} ${cx},${y} ${cx+17},${y+14} ${cx+17},${y+40}" fill="${C('accent')}"/>`+knob(cx,y+18,n,y+35)}
+function draw(){
+let s=`<defs><pattern id="br" width="16" height="8" patternUnits="userSpaceOnUse"><path d="M0 0.5H16M8 0V4M0 4.5H16M0 4V8" stroke="rgba(0,0,0,.3)" stroke-width="1" fill="none"/></pattern></defs>`;
+s+=`<polygon points="20,126 60,64 280,64 320,126" fill="${C('roof')}" stroke="${C('frame')}" stroke-width="4" stroke-linejoin="round"/><polygon points="20,126 60,64 280,64 320,126" fill="url(#br)"/>`;
+s+=`<polygon points="108,126 170,36 232,126" fill="${C('roof')}" stroke="${C('frame')}" stroke-width="4" stroke-linejoin="round"/><polygon points="108,126 170,36 232,126" fill="url(#br)"/>`;
+s+=dormer(75,76,25)+dormer(170,62,27)+dormer(265,76,26);
+s+=`<rect x="26" y="118" width="288" height="188" rx="3" fill="${C('frame')}"/>`;
+D.forEach(([c,r,n,t])=>{const x=X+c*W,y=Y+r*H;s+=`<rect x="${x+3}" y="${y+3}" width="${W-6}" height="${H-6}" rx="2" fill="${C(t)}"/>`+knob(x+W/2,y+12,n,y+29)});
+[[0,28],[1,29]].forEach(([r,n])=>{const x=X+3*W,y=Y+r*H;s+=`<rect x="${x+3}" y="${y+3}" width="${W-6}" height="${H-6}" rx="2" fill="${C('accent')}"/><line x1="${x+W/2}" y1="${y+3}" x2="${x+W/2}" y2="${y+H-3}" stroke="${C('frame')}" stroke-width="1.5"/>`+knob(x+W/2+8,y+12,n,y+29)});
+s+=`<rect x="113" y="197" width="114" height="102" rx="2" fill="${C('stone')}"/><rect x="113" y="197" width="114" height="102" fill="url(#br)"/>`;
+s+=`<path d="M147 299V230A23 23 0 0 1 193 230V299Z" fill="${C('frame')}"/><path d="M151 296V231A19 19 0 0 1 189 231V296Z" fill="${C('door')}"/>`;
+[160,170,180].forEach(x=>s+=`<line x1="${x}" y1="${x==170?212:218}" x2="${x}" y2="296" stroke="rgba(0,0,0,.25)"/>`);
+s+=`<line x1="151" y1="263" x2="189" y2="263" stroke="${C('frame')}" stroke-width="2.5"/>`+knob(170,236,30,254)+knob(170,272,31,290);
+[129,211].forEach(x=>{s+=`<polygon points="${x-7},238 ${x+7},238 ${x},272" fill="${C('frame')}"/><rect x="${x-8}" y="234" width="16" height="6" rx="1" fill="${C('frame')}"/><ellipse cx="${x}" cy="225" rx="5.5" ry="10" fill="${C('flame')}"/>`});
+document.getElementById('house').innerHTML=s;}
+const pr=document.getElementById('presets'),btns={};
+Object.keys(PRE).forEach(k=>{const b=document.createElement('button');b.type="button";b.textContent=k;b.onclick=()=>{S={...PRE[k]};active=k;sync();draw()};btns[k]=b;pr.appendChild(b)});
+const pa=document.getElementById('parts'),sels={},chips={};
+PARTS.forEach(([k,l])=>{const w=document.createElement('label');w.textContent=l;const row=document.createElement('div');row.className="pick";const ch=document.createElement('span');ch.className="chip";const sel=document.createElement('select');
+Object.entries(P).forEach(([pk,[n]])=>{const o=document.createElement('option');o.value=pk;o.textContent=n;sel.appendChild(o)});
+sel.onchange=()=>{S[k]=sel.value;active=null;sync();draw()};sels[k]=sel;chips[k]=ch;row.append(ch,sel);w.appendChild(row);pa.appendChild(w)});
+function sync(){for(const k in sels){sels[k].value=S[k];chips[k].style.background=C(k)}for(const k in btns)btns[k].setAttribute('aria-pressed',k===active)}
+sync();draw();
+</script>
+</body>
+</html>
