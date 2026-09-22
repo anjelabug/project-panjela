@@ -17,6 +17,8 @@ h1{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:clamp(2
 .layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:2rem;align-items:start}
 @media (max-width:760px){.layout{grid-template-columns:1fr}}
 .stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1rem}
+.stage.night{background:#121016}
+.stagebar{display:flex;justify-content:flex-end;margin-bottom:.5rem}
 .stage svg{display:block;width:100%;height:auto}
 h2{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:1.35rem;margin:0 0 .75rem}
 .presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:1.75rem}
@@ -37,7 +39,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline
 <h1>Spooky house, in gothic colors</h1>
 <p class="intro">Colorway ideas for the Halloween spooky house advent calendar, using filaments on hand. Pick a preset, then swap any part to try your own combination.</p>
 <div class="layout">
-<div class="stage"><svg id="house" viewBox="0 0 340 318" role="img" aria-label="Advent calendar house mockup in the selected colors"></svg></div>
+<div class="stage"><div class="stagebar"><button type="button" id="lights" aria-pressed="false">Lights off</button></div><svg id="house" viewBox="0 0 340 318" role="img" aria-label="Advent calendar house mockup in the selected colors"></svg></div>
 <div>
 <h2>Presets</h2>
 <div class="presets" id="presets"></div>
@@ -45,7 +47,7 @@ button:focus-visible,select:focus-visible{outline:2px solid var(--focus);outline
 <div class="parts" id="parts"></div>
 </div>
 </div>
-<p class="note">Colors are approximated from the filament hex codes. Marble and metallic finishes are shown flat.</p>
+<p class="note">Colors are approximated from the filament hex codes. Marble and metallic finishes are shown flat, and Silk Red Gold is shown as a blend of its two colors. Lights off shows roughly how Glow Green parts stand out in the dark.</p>
 </main>
 <script>
 const P={
@@ -53,7 +55,8 @@ chestnut:["Roasted Chestnut Black","#252321"],coffee:["Coffee Brown","#4E3121"],
 pumpkin:["Pumpkin Orange","#FF9016"],sunny:["Sunny Orange","#E65E0F"],indigo:["Indigo Purple","#482960"],lavender:["Lavender Purple","#6B4FBB"],
 grey:["Grey 250","#636767"],ash:["Ash Gray","#9B9EA0"],bluegray:["Blue Gray","#5B6579"],mblack:["Matte Black","#161616"],
 ashen:["Ashen Concrete marble","#8F8F8F"],storm:["Shadow Storm marble","#C9C9C9"],absblack:["Absolute Black","#0E0E0E"],
-maroon:["Maroon Red","#9D2235"],bone:["Bone White","#CBC6B8"],silver:["Silver","#B9BDC3"],gold:["Iridium Gold","#A08850"]};
+maroon:["Maroon Red","#9D2235"],bone:["Bone White","#CBC6B8"],glow:["Glow Green","#A1FFAC"],silver:["Silver","#B9BDC3"],gold:["Iridium Gold","#A08850"],
+redgold:["Silk Red Gold","#A8222B","#D9A93F"]};
 const PARTS=[["frame","Frame and trim"],["roof","Roof"],["a","Drawers A"],["b","Drawers B"],["c","Drawers C"],["accent","Dormers and 28/29"],["stone","Stone gate"],["door","Door 30/31"],["metal","Knobs and numbers"],["flame","Torch flames"]];
 const PRE={
 "Mourning velvet":{frame:"absblack",roof:"indigo",a:"indigo",b:"midnight",c:"bluegray",accent:"maroon",stone:"grey",door:"maroon",metal:"silver",flame:"gold"},
@@ -61,16 +64,24 @@ const PRE={
 "Ashen crypt":{frame:"mblack",roof:"grey",a:"grey",b:"ash",c:"bluegray",accent:"indigo",stone:"ashen",door:"cocoa",metal:"silver",flame:"gold"},
 "Tarnished manor":{frame:"midnight",roof:"bluegray",a:"indigo",b:"bluegray",c:"grey",accent:"cocoa",stone:"ashen",door:"maroon",metal:"gold",flame:"gold"},
 "Bone yard":{frame:"chestnut",roof:"cocoa",a:"ash",b:"bone",c:"storm",accent:"maroon",stone:"ashen",door:"coffee",metal:"chestnut",flame:"gold"},
-"Candlelit ossuary":{frame:"absblack",roof:"maroon",a:"indigo",b:"maroon",c:"midnight",accent:"bone",stone:"grey",door:"coffee",metal:"bone",flame:"gold"}};
-let S={...PRE["Mourning velvet"]},active="Mourning velvet";
-const C=k=>P[S[k]][1];
+"Candlelit ossuary":{frame:"absblack",roof:"maroon",a:"indigo",b:"maroon",c:"midnight",accent:"bone",stone:"grey",door:"coffee",metal:"bone",flame:"gold"},
+"Hearthfire":{frame:"chestnut",roof:"maroon",a:"maroon",b:"coffee",c:"cocoa",accent:"bone",stone:"ashen",door:"coffee",metal:"gold",flame:"redgold"},
+"Velvet and flame":{frame:"absblack",roof:"indigo",a:"indigo",b:"midnight",c:"maroon",accent:"cocoa",stone:"grey",door:"maroon",metal:"gold",flame:"redgold"},
+"Witchlight":{frame:"absblack",roof:"indigo",a:"indigo",b:"midnight",c:"bluegray",accent:"glow",stone:"grey",door:"maroon",metal:"silver",flame:"glow"},
+"Graveyard glow":{frame:"mblack",roof:"grey",a:"grey",b:"ash",c:"bluegray",accent:"indigo",stone:"ashen",door:"cocoa",metal:"glow",flame:"glow"},
+"Will-o'-the-wisp":{frame:"midnight",roof:"bluegray",a:"bluegray",b:"midnight",c:"grey",accent:"bone",stone:"ashen",door:"cocoa",metal:"glow",flame:"redgold"}};
+let S={...PRE["Mourning velvet"]},active="Mourning velvet",dark=false;
+function shade(h,f){const n=parseInt(h.slice(1),16);return "#"+[16,8,0].map(s=>Math.round(((n>>s)&255)*f).toString(16).padStart(2,"0")).join("")}
+function tone(h,key){if(!dark)return h;return key==="glow"?"#7DFF6A":shade(h,.2)}
+const C=k=>{const key=S[k],e=P[key];return e[2]?`url(#g-${key})`:tone(e[1],key)};
+const chipBg=key=>{const e=P[key];return e[2]?`linear-gradient(135deg,${e[1]},${e[2]})`:e[1]};
 const D=[[0,0,2,"a"],[1,0,24,"b"],[2,0,16,"c"],[4,0,14,"c"],[5,0,23,"b"],[6,0,1,"a"],[0,1,13,"c"],[1,1,8,"a"],[2,1,20,"b"],[4,1,21,"b"],[5,1,4,"a"],[6,1,11,"c"],
 [0,2,5,"a"],[1,2,10,"c"],[5,2,9,"c"],[6,2,17,"b"],[0,3,12,"c"],[1,3,19,"b"],[5,3,3,"a"],[6,3,15,"c"],[0,4,22,"b"],[1,4,7,"a"],[5,4,18,"b"],[6,4,6,"a"]];
 const W=40,H=36,X=30,Y=122;
 function knob(x,y,n,ny){return `<circle cx="${x}" cy="${y}" r="3.5" fill="${C('metal')}"/><text x="${x}" y="${ny}" text-anchor="middle" fill="${C('metal')}" font-size="11" font-weight="600" font-family="Source Sans 3,system-ui,sans-serif">${n}</text>`}
 function dormer(cx,y,n){return `<polygon points="${cx-22},${y+44} ${cx-22},${y+14} ${cx},${y-6} ${cx+22},${y+14} ${cx+22},${y+44}" fill="${C('frame')}"/><polygon points="${cx-17},${y+40} ${cx-17},${y+14} ${cx},${y} ${cx+17},${y+14} ${cx+17},${y+40}" fill="${C('accent')}"/>`+knob(cx,y+18,n,y+35)}
 function draw(){
-let s=`<defs><pattern id="br" width="16" height="8" patternUnits="userSpaceOnUse"><path d="M0 0.5H16M8 0V4M0 4.5H16M0 4V8" stroke="rgba(0,0,0,.3)" stroke-width="1" fill="none"/></pattern></defs>`;
+let s=`<defs><pattern id="br" width="16" height="8" patternUnits="userSpaceOnUse"><path d="M0 0.5H16M8 0V4M0 4.5H16M0 4V8" stroke="rgba(0,0,0,.3)" stroke-width="1" fill="none"/></pattern>`+Object.entries(P).filter(([,e])=>e[2]).map(([k,e])=>`<linearGradient id="g-${k}" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="${tone(e[2],k)}"/><stop offset="0.55" stop-color="${tone(e[1],k)}"/><stop offset="1" stop-color="${tone(e[2],k)}"/></linearGradient>`).join("")+`</defs>`;
 s+=`<polygon points="20,126 60,64 280,64 320,126" fill="${C('roof')}" stroke="${C('frame')}" stroke-width="4" stroke-linejoin="round"/><polygon points="20,126 60,64 280,64 320,126" fill="url(#br)"/>`;
 s+=`<polygon points="108,126 170,36 232,126" fill="${C('roof')}" stroke="${C('frame')}" stroke-width="4" stroke-linejoin="round"/><polygon points="108,126 170,36 232,126" fill="url(#br)"/>`;
 s+=dormer(75,76,25)+dormer(170,62,27)+dormer(265,76,26);
@@ -89,7 +100,9 @@ const pa=document.getElementById('parts'),sels={},chips={};
 PARTS.forEach(([k,l])=>{const w=document.createElement('label');w.textContent=l;const row=document.createElement('div');row.className="pick";const ch=document.createElement('span');ch.className="chip";const sel=document.createElement('select');
 Object.entries(P).forEach(([pk,[n]])=>{const o=document.createElement('option');o.value=pk;o.textContent=n;sel.appendChild(o)});
 sel.onchange=()=>{S[k]=sel.value;active=null;sync();draw()};sels[k]=sel;chips[k]=ch;row.append(ch,sel);w.appendChild(row);pa.appendChild(w)});
-function sync(){for(const k in sels){sels[k].value=S[k];chips[k].style.background=C(k)}for(const k in btns)btns[k].setAttribute('aria-pressed',k===active)}
+const lb=document.getElementById('lights'),stage=document.querySelector('.stage');
+lb.onclick=()=>{dark=!dark;lb.setAttribute('aria-pressed',dark);lb.textContent=dark?"Lights on":"Lights off";stage.classList.toggle('night',dark);draw()};
+function sync(){for(const k in sels){sels[k].value=S[k];chips[k].style.background=chipBg(S[k])}for(const k in btns)btns[k].setAttribute('aria-pressed',k===active)}
 sync();draw();
 </script>
 </body>
